@@ -20,14 +20,15 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  // Start with default values for server rendering
+  const [isClient, setIsClient] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
-  // This effect will only run on the client after hydration
   useEffect(() => {
-    setMounted(true);
+    // Mark that we've hydrated
+    setIsClient(true);
   }, []);
 
   const navigation = [
@@ -39,30 +40,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   ];
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
+    if (isClient) {
       localStorage.removeItem('dashboard_auth');
       router.push('/dashboard/login');
     }
   };
 
-  // Render a basic layout during server-side rendering to avoid hydration mismatch
-  if (!mounted) {
-    return (
-      <div className="h-screen flex overflow-hidden bg-slate-950">
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <main className="flex-1 overflow-y-auto bg-slate-950 p-4 lg:p-6">
-            {children}
-          </main>
-        </div>
-      </div>
-    );
-  }
-
-  // Regular client-side render
   return (
     <div className="h-screen flex overflow-hidden bg-slate-950">
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
+      {/* Mobile sidebar overlay - only show on client */}
+      {isClient && sidebarOpen && (
         <div 
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
@@ -72,7 +59,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800/50 transition-transform duration-300 ease-in-out transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          !isClient || !sidebarOpen ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'
         } lg:static lg:inset-0`}
       >
         <div className="flex flex-col h-full">
@@ -84,12 +71,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </div>
               <span className="text-white font-semibold text-lg">Kayes Admin</span>
             </Link>
-            <button 
-              className="p-1 text-slate-400 hover:text-white lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X size={20} />
-            </button>
+            {isClient && (
+              <button 
+                className="p-1 text-slate-400 hover:text-white lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X size={20} />
+              </button>
+            )}
           </div>
 
           {/* Navigation links */}
@@ -131,12 +120,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top navigation */}
         <header className="bg-slate-900 border-b border-slate-800/50 h-16 flex items-center px-4 lg:px-6">
-          <button
-            className="p-1 mr-4 text-slate-400 hover:text-white lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu size={24} />
-          </button>
+          {isClient && (
+            <button
+              className="p-1 mr-4 text-slate-400 hover:text-white lg:hidden"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+          )}
           <h1 className="text-xl font-semibold text-white">
             {navigation.find(item => item.href === pathname)?.name || 'Dashboard'}
           </h1>

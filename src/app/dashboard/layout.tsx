@@ -13,37 +13,31 @@ export default function DashboardLayoutWrapper({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [loading, setLoading] = useState(false); // Start as false for SSR
   
   useEffect(() => {
     // Mark that we're on the client
-    setMounted(true);
+    setIsClient(true);
     
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem('dashboard_auth') === 'true';
-    
-    // Allow access to login page without authentication
-    if (pathname === '/dashboard/login') {
-      setLoading(false);
-      return;
-    }
-    
-    // If not authenticated and not on login page, redirect to login
-    if (!isAuthenticated) {
-      router.push('/dashboard/login');
-    } else {
-      setLoading(false);
+    // Only set loading and check authentication on the client
+    if (pathname !== '/dashboard/login') {
+      setLoading(true);
+      
+      // Check if user is authenticated
+      const isAuthenticated = localStorage.getItem('dashboard_auth') === 'true';
+      
+      // If not authenticated and not on login page, redirect to login
+      if (!isAuthenticated) {
+        router.push('/dashboard/login');
+      } else {
+        setLoading(false);
+      }
     }
   }, [router, pathname]);
   
-  // During SSR or before hydration completes, render a minimal layout
-  if (!mounted) {
-    return <div className="min-h-screen bg-slate-950">{children}</div>;
-  }
-  
-  // Show loading state only on client after authentication check
-  if (loading && pathname !== '/dashboard/login') {
+  // Show loading state only on client after hydration
+  if (isClient && loading && pathname !== '/dashboard/login') {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>

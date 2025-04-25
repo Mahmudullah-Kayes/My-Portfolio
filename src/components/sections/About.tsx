@@ -19,7 +19,7 @@ const defaultSettings: AboutSettings = {
     'My approach combines clean code practices with modern development tools to deliver high-quality solutions. I focus on creating seamless user experiences while ensuring robust and efficient server-side operations.',
     'When I\'m not coding, I\'m constantly exploring new technologies and best practices to stay at the forefront of web development. I believe in writing clean, maintainable code and creating applications that make a difference.'
   ],
-  image_url: 'https://i.ibb.co/default-image.jpg'
+  image_url: '/placeholder-profile.jpg' // Using a local placeholder to avoid hydration issues
 };
 
 const About = () => {
@@ -44,7 +44,6 @@ const About = () => {
       }
 
       console.log('Fetched about settings:', data);
-      console.log('Image URL from database:', data?.image_url);
       
       if (data) {
         // Validate image URL
@@ -55,6 +54,10 @@ const About = () => {
 
         if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
           try {
+            // Fix any incorrect URLs that might have double .com
+            if (imageUrl.includes('i.ibb.co.com')) {
+              imageUrl = imageUrl.replace('i.ibb.co.com', 'i.ibb.co');
+            }
             new URL(imageUrl); // Check if it's a valid absolute URL
             isValidUrl = true;
             console.log('Database URL is valid:', imageUrl);
@@ -117,6 +120,7 @@ const About = () => {
     };
   }, []);
 
+  // Don't render anything on server-side to avoid hydration issues
   if (!isMounted) {
     return null;
   }

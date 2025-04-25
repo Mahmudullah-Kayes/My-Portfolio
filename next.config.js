@@ -9,4 +9,7 @@ module.exports = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ['i.ibb.co'],
+  },
 } 
