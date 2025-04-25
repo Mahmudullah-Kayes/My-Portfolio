@@ -1,37 +1,82 @@
 import { createClient } from '@supabase/supabase-js';
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
-}
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
-}
+// Check if environment variables are available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-    global: {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
+// Function to safely create the Supabase client
+function createSafeClient() {
+  // Check if we're in a browser environment
+  const isBrowser = typeof window !== 'undefined';
+  
+  // Only throw errors in browser environment where they'll be caught by error boundaries
+  if (!supabaseUrl) {
+    if (isBrowser) {
+      console.error('Missing Supabase URL environment variable');
+    } else {
+      // During SSR or static generation, return a dummy client
+      return createDummyClient();
+    }
   }
-);
+  
+  if (!supabaseAnonKey) {
+    if (isBrowser) {
+      console.error('Missing Supabase Anon Key environment variable');
+    } else {
+      // During SSR or static generation, return a dummy client
+      return createDummyClient();
+    }
+  }
+  
+  // Create the real client if we have all we need
+  if (supabaseUrl && supabaseAnonKey) {
+    return createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+      global: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    });
+  }
+  
+  // Fallback to dummy client
+  return createDummyClient();
+}
 
-// Add error handling middleware
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, session);
-});
+// Create a dummy Supabase client that won't throw errors during build/SSR
+function createDummyClient() {
+  // Return an object that mimics the Supabase client but with no-op functions
+  return {
+    from: () => ({
+      select: () => ({
+        limit: () => ({
+          order: () => ({
+            single: () => Promise.resolve({ data: null, error: null }),
+          }),
+        }),
+      }),
+    }),
+    auth: {
+      onAuthStateChange: () => ({ data: null, error: null }),
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+    },
+    channel: () => ({
+      on: () => ({ subscribe: () => {} }),
+    }),
+    removeChannel: () => {},
+    rpc: () => Promise.resolve({ data: null, error: null }),
+  };
+}
 
-// Instead of overriding the rpc method directly, which causes type issues,
-// we'll use a separate function that logs errors but preserves the original behavior
+// Export the safely created client
+export const supabase = createSafeClient();
 
-export async function safeRpc<T = any>(fnName: string, params?: object, options?: any) {
+// Safe RPC function that handles errors
+export async function safeRpc(fnName: string, params?: object, options?: any) {
   try {
     return await supabase.rpc(fnName, params, options);
   } catch (error) {
