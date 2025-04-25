@@ -28,13 +28,14 @@ supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session);
 });
 
-// Add request interceptor
-const originalRequest = supabase.rpc;
-supabase.rpc = async function (...args) {
+// Instead of overriding the rpc method directly, which causes type issues,
+// we'll use a separate function that logs errors but preserves the original behavior
+
+export async function safeRpc<T = any>(fnName: string, params?: object, options?: any) {
   try {
-    return await originalRequest.apply(this, args);
+    return await supabase.rpc(fnName, params, options);
   } catch (error) {
     console.error('Supabase RPC error:', error);
     throw error;
   }
-}; 
+} 

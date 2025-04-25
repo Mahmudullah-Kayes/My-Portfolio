@@ -14,8 +14,12 @@ export default function DashboardLayoutWrapper({
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
+    // Mark that we're on the client
+    setMounted(true);
+    
     // Check if user is authenticated
     const isAuthenticated = localStorage.getItem('dashboard_auth') === 'true';
     
@@ -33,6 +37,12 @@ export default function DashboardLayoutWrapper({
     }
   }, [router, pathname]);
   
+  // During SSR or before hydration completes, render a minimal layout
+  if (!mounted) {
+    return <div className="min-h-screen bg-slate-950">{children}</div>;
+  }
+  
+  // Show loading state only on client after authentication check
   if (loading && pathname !== '/dashboard/login') {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">

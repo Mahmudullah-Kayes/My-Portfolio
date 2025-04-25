@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
@@ -21,8 +21,14 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  // This effect will only run on the client after hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -33,10 +39,26 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('dashboard_auth');
-    router.push('/dashboard/login');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('dashboard_auth');
+      router.push('/dashboard/login');
+    }
   };
 
+  // Render a basic layout during server-side rendering to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="h-screen flex overflow-hidden bg-slate-950">
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <main className="flex-1 overflow-y-auto bg-slate-950 p-4 lg:p-6">
+            {children}
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  // Regular client-side render
   return (
     <div className="h-screen flex overflow-hidden bg-slate-950">
       {/* Mobile sidebar overlay */}
