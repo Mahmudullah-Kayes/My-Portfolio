@@ -141,12 +141,9 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mt-8">
-              <Link href="#projects" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-md shadow-purple-900/20 transition-all duration-200 hover:shadow-lg hover:shadow-purple-900/30">
+              <Link href="#works" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-md shadow-purple-900/20 transition-all duration-200 hover:shadow-lg hover:shadow-purple-900/30">
                 View My Work
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-              <Link href="#contact" className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-md text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all duration-200">
-                Contact Me
               </Link>
             </div>
           </motion.div>
@@ -316,4 +313,4 @@ const expertise = {
   );
 };
 
-export default Hero; 
+export default Hero;
