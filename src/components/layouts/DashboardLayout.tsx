@@ -69,7 +69,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <div className="w-8 h-8 rounded-md bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
                 <span className="text-white font-bold">K</span>
               </div>
-              <span className="text-white font-semibold text-lg">Kayes Admin</span>
+              <span className="text-white font-semibold text-lg">Dashboard</span>
             </Link>
             {isClient && (
               <button 
