@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import PageViewTracker from "@/components/analytics/PageViewTracker";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import GADebugger from "@/components/analytics/GADebugger";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -97,6 +98,8 @@ export default function RootLayout({
         <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         <PageViewTracker />
         {children}
+        {/* Only shows in development mode */}
+        <GADebugger />
       </body>
     </html>
   );
