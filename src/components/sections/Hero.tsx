@@ -168,7 +168,7 @@ const Hero = () => {
           {/* Action Buttons */}
           <div className="flex flex-row gap-3 sm:gap-6 w-full max-w-sm sm:max-w-none mx-auto justify-center">
             <a 
-              href="#work" 
+              href="#client-projects" 
               className="flex items-center justify-center px-4 sm:px-8 py-2.5 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white font-medium hover:bg-white/20 hover:border-white/30 transform hover:scale-105 transition-all duration-300 text-sm sm:text-base whitespace-nowrap"
             >
               View Work

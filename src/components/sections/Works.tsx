@@ -103,7 +103,7 @@ const Works = () => {
   }, [activeCategory]);
 
   return (
-    <section id="works" className="relative py-24 overflow-hidden bg-[#0B1120]">
+    <section id="works" className="relative py-24 overflow-hidden bg-[#0B0D17]">
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
