@@ -417,16 +417,16 @@ const About = () => {
                                 </h4>
                                 <div className="flex items-center gap-2 text-purple-400 text-sm font-medium mb-2">
                                   <Briefcase className="w-4 h-4" />
-                                  Tech Company Inc.
+                                  Atolyn
                                   <span className="text-slate-500">•</span>
                                   <span className="text-slate-400">2024-Present</span>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="text-blue-300 text-xs font-medium">React</span>
+                                  <span className="text-blue-300 text-xs font-medium">Next.js</span>
                                   <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-green-300 text-xs font-medium">Tailwind CSS</span>
+                                  <span className="text-green-300 text-xs font-medium">Laravel</span>
                                   <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-purple-300 text-xs font-medium">Laravel</span>
+                                  <span className="text-purple-300 text-xs font-medium">MySQL</span>
                                 </div>
                               </div>
                               
@@ -434,20 +434,20 @@ const About = () => {
                               
                               <div>
                                 <h4 className="text-lg font-semibold text-white mb-1">
-                                  Full Stack Developer
+                                  Frontend Developer
                                 </h4>
                                 <div className="flex items-center gap-2 text-purple-400 text-sm font-medium mb-2">
                                   <Code2 className="w-4 h-4" />
-                                  Startup Solutions
+                                  Freelancer
                                   <span className="text-slate-500">•</span>
-                                  <span className="text-slate-400">2022-2023</span>
+                                  <span className="text-slate-400">2021-2023</span>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="text-red-300 text-xs font-medium">Laravel</span>
+                                  <span className="text-red-300 text-xs font-medium">React</span>
                                   <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-yellow-300 text-xs font-medium">JavaScript</span>
+                                  <span className="text-yellow-300 text-xs font-medium">Tailwind CSS</span>
                                   <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-blue-300 text-xs font-medium">MySQL</span>
+                                  <span className="text-blue-300 text-xs font-medium">Bootstrap</span>
                                 </div>
                               </div>
                             </div>
