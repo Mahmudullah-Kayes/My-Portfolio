@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import PageViewTracker from "@/components/analytics/PageViewTracker";
 import AnalyticsReset from "./analytics-reset";
 import CustomHead from "./custom-head";
+import KeyboardShortcutsHandler from "@/components/KeyboardShortcutsHandler";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -104,6 +105,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+        <KeyboardShortcutsHandler />
         <Suspense fallback={null}>
           <AnalyticsReset />
           <PageViewTracker />
