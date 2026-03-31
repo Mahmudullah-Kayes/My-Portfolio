@@ -93,31 +93,38 @@ const Navbar = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-4 px-4 sm:px-6"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-4 py-4 sm:px-6"
       >
         {/* Desktop Navigation */}
         <nav 
           className={`hidden md:flex ${
-            scrolled ? 'bg-slate-900/80 shadow-lg shadow-slate-900/20' : 'bg-transparent'
-          } rounded-full border border-slate-800/50 backdrop-blur-md transition-all duration-300 px-6 py-3`}
+            scrolled
+              ? 'bg-slate-900/60 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.95)] ring-1 ring-teal-300/15'
+              : 'bg-slate-900/35 ring-1 ring-white/10'
+          } relative overflow-hidden rounded-full border border-slate-200/10 backdrop-blur-xl transition-all duration-300 px-6 py-3`}
         >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(45,212,191,0.15),transparent_35%),radial-gradient(circle_at_85%_85%,rgba(99,102,241,0.15),transparent_35%)]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
           <ul className="flex items-center gap-8">
             {navItems.map((item) => (
               <li key={item.name}>
                 <Link
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item.href)}
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`relative rounded-full px-3 py-2 text-sm font-medium transition-colors ${
                     activeSection === item.href.substring(1)
                       ? 'text-white'
-                      : 'text-slate-400 hover:text-white'
+                      : 'text-slate-300 hover:text-white'
                   }`}
                 >
+                  {activeSection === item.href.substring(1) && (
+                    <span className="absolute inset-0 -z-10 rounded-full bg-white/5" />
+                  )}
                   {item.name}
                   {activeSection === item.href.substring(1) && (
                     <motion.div
                       layoutId="activeSection"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"
+                      className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-gradient-to-r from-teal-400 to-indigo-500"
                       initial={false}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
@@ -128,8 +135,9 @@ const Navbar = () => {
             <li>
               <button
                 onClick={openContactModal}
-                className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                className="relative overflow-hidden rounded-full border border-teal-300/30 bg-gradient-to-r from-teal-400/90 to-indigo-600/90 px-6 py-2 text-sm font-semibold text-white transition-all duration-300 hover:from-teal-400 hover:to-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30"
               >
+                <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 transition-opacity duration-300 hover:opacity-100" />
                 Let's Talk
               </button>
             </li>
@@ -140,18 +148,21 @@ const Navbar = () => {
         <div className="md:hidden w-full max-w-sm">
           <div 
             className={`flex items-center justify-between ${
-              scrolled ? 'bg-slate-900/80 shadow-lg shadow-slate-900/20' : 'bg-slate-900/60'
-            } rounded-full border border-slate-800/50 backdrop-blur-md transition-all duration-300 px-4 py-3`}
+              scrolled
+                ? 'bg-slate-900/70 shadow-[0_16px_30px_-20px_rgba(15,23,42,0.95)] ring-1 ring-teal-300/15'
+                : 'bg-slate-900/45 ring-1 ring-white/10'
+            } relative overflow-hidden rounded-full border border-slate-200/10 backdrop-blur-xl transition-all duration-300 px-4 py-3`}
           >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.12),transparent_35%),radial-gradient(circle_at_85%_80%,rgba(99,102,241,0.12),transparent_35%)]" />
             {/* Logo/Brand */}
-            <div className="flex items-center">
-              <span className="text-white font-semibold text-lg">Kayes</span>
+            <div className="relative z-10 flex items-center">
+              <span className="font-semibold text-lg bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-500">Kayes</span>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              className="p-2 text-slate-400 hover:text-white transition-colors rounded-lg"
+              className="relative z-10 rounded-lg p-2 text-slate-300 transition-colors hover:text-white"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -166,7 +177,7 @@ const Navbar = () => {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute top-full left-4 right-4 mt-2 bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-800/50 shadow-xl shadow-slate-900/50 overflow-hidden"
+                className="absolute left-4 right-4 top-full mt-2 overflow-hidden rounded-2xl border border-slate-200/10 bg-slate-900/85 shadow-xl shadow-slate-900/50 ring-1 ring-teal-300/10 backdrop-blur-xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="py-4">
@@ -182,8 +193,8 @@ const Navbar = () => {
                         onClick={(e) => handleNavClick(e, item.href)}
                         className={`block px-6 py-3 text-base font-medium transition-colors border-l-4 ${
                           activeSection === item.href.substring(1)
-                            ? 'text-white border-purple-400 bg-slate-800/50'
-                            : 'text-slate-400 hover:text-white border-transparent hover:border-slate-600 hover:bg-slate-800/30'
+                            ? 'border-teal-400 bg-slate-800/55 text-white'
+                            : 'border-transparent text-slate-300 hover:border-slate-500 hover:bg-slate-800/35 hover:text-white'
                         }`}
                       >
                         {item.name}
@@ -200,7 +211,7 @@ const Navbar = () => {
                   >
                     <button
                       onClick={openContactModal}
-                      className="w-full px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                      className="w-full rounded-xl border border-teal-300/25 bg-gradient-to-r from-teal-400/90 to-indigo-600/90 px-6 py-3 text-base font-semibold text-white transition-all duration-300 hover:from-teal-400 hover:to-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30"
                     >
                       Let's Talk
                     </button>

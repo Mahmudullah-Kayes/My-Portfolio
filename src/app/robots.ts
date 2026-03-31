@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  // Replace with your actual domain
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com';
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://kayes-portfolio.vercel.app').replace(/\/$/, '');
   
   return {
     rules: {

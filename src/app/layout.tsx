@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 // Site URL for canonical URLs and social sharing
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kayes-portfolio.vercel.app/';
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://kayes-portfolio.vercel.app').replace(/\/$/, '');
 
 export const metadata: Metadata = {
   title: {
@@ -39,9 +39,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  // Block third-party analytics
-  other: {
-    'content-security-policy': "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com;"
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
   },
   // Open Graph metadata
   openGraph: {

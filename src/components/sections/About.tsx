@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Code2, Rocket, Zap, Globe, Heart, Coffee, GraduationCap, Briefcase } from 'lucide-react';
-import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Code2, MapPin } from "lucide-react";
+import Image from "next/image";
+import { supabase } from "@/lib/supabase";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface AboutSettings {
   title: string;
@@ -13,451 +15,308 @@ interface AboutSettings {
 }
 
 interface HeroSettings {
-  status: 'available' | 'busy' | 'offline';
+  status: "available" | "busy" | "offline";
   available_text: string;
   busy_text: string;
   offline_text: string;
 }
 
-const defaultSettings: AboutSettings = {
-  title: 'Building Digital Universes, One Line at a Time',
-  description: [
-    'Hey there! I\'m Kayes, a passionate Full Stack Developer who believes code is poetry and every project is a new adventure in the digital cosmos.',
-    'I specialize in crafting modern web applications that don\'t just work—they inspire. From sleek frontends that users love to robust backends that scale, I build digital experiences that matter.',
-    'When I\'m not exploring new technologies or debugging at 3 AM (with coffee, obviously), you\'ll find me thinking about how to make the web a more beautiful and functional place.'
-  ],
-  image_url: '/placeholder-profile.jpg'
+// ─── Static data ──────────────────────────────────────────────────────────────
+
+const EDUCATION = [
+  {
+    degree: "Bachelor's in Computer Science",
+    institution: "Northern University Bangladesh",
+    period: "2025 – 2028",
+  },
+  {
+    degree: "Diploma in Computer Science",
+    institution: "Shyamoli Ideal Polytechnic Institute",
+    period: "2020 – 2024",
+  },
+];
+
+const EXPERIENCE = [
+  {
+    role: "Full Stack Developer",
+    company: "Atolyn",
+    period: "2024 – Present",
+    stack: ["Next.js", "Laravel", "MySQL"],
+  },
+  {
+    role: "Frontend Developer",
+    company: "Freelancer",
+    period: "2021 – 2023",
+    stack: ["React", "Tailwind CSS", "Bootstrap"],
+  },
+];
+
+const STATUS_CFG = {
+  available: { dot: "bg-emerald-400", text: "text-emerald-400" },
+  busy:      { dot: "bg-amber-400",   text: "text-amber-400"   },
+  offline:   { dot: "bg-red-400",     text: "text-red-400"     },
 };
+
+const DEFAULTS = {
+  about: {
+    title: "",
+    description: [
+      "Hey there! I'm Kayes, a passionate Full Stack Developer who believes code is poetry and every project is a new adventure in the digital cosmos.",
+      "I specialize in crafting modern web applications that don't just work — they inspire. From sleek frontends to robust backends, I build digital experiences that matter.",
+    ],
+    image_url: "",
+  } as AboutSettings,
+  hero: {
+    status: "available" as const,
+    available_text: "Available for projects",
+    busy_text: "Currently busy",
+    offline_text: "Currently offline",
+  } as HeroSettings,
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const About = () => {
   const [isMounted, setIsMounted] = useState(false);
-  const [settings, setSettings] = useState<AboutSettings>(defaultSettings);
-  const [heroSettings, setHeroSettings] = useState<HeroSettings>({
-    status: 'available',
-    available_text: "Available for projects",
-    busy_text: "Currently busy",
-    offline_text: "Currently offline"
-  });
-  const [loading, setLoading] = useState(true);
-  const [imageError, setImageError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'education' | 'experience'>('education');
-
-  const fetchSettings = async () => {
-    try {
-      // Fetch about settings
-      const aboutResult = await supabase
-        .from('about_settings')
-        .select('*')
-        .limit(1)
-        .order('created_at', { ascending: true })
-        .single();
-
-      // Fetch hero settings for status
-      const heroResult = await supabase
-        .from('hero_settings')
-        .select('*')
-        .limit(1)
-        .order('created_at', { ascending: true })
-        .single();
-
-      // Handle about settings
-      if (aboutResult.error) {
-        // Keep existing settings or default settings, but indicate loading failed
-        setImageError('Failed to fetch settings'); 
-      } else if (aboutResult.data) {
-        const imageUrl = aboutResult.data.image_url;
-        
-        // Simple URL validation
-        const isValidUrl = imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'));
-        
-        if (isValidUrl) {
-          // Valid URL from database
-        } else {
-          // Invalid or empty URL, use default
-        }
-        
-        setSettings({
-          title: aboutResult.data.title || defaultSettings.title,
-          description: aboutResult.data.description || defaultSettings.description,
-          image_url: imageUrl // Use the validated or default URL
-        });
-        setImageError(null); // Reset error if validation succeeds or defaults are used
-      } else {
-        // Handle case where no data is returned at all
-        setSettings(defaultSettings);
-        setImageError(null); // Assuming default image URL is valid
-      }
-
-      // Handle hero settings
-      if (heroResult.error) {
-        // Keep default settings
-      } else if (heroResult.data) {
-        setHeroSettings({
-          status: heroResult.data.status || 'available',
-          available_text: heroResult.data.available_text || "Available for projects",
-          busy_text: heroResult.data.busy_text || "Currently busy",
-          offline_text: heroResult.data.offline_text || "Currently offline"
-        });
-      }
-    } catch (error) {
-      // Keep existing settings or default settings, but indicate loading failed
-      setImageError('Failed to fetch settings'); 
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading, setLoading]     = useState(true);
+  const [about, setAbout]         = useState<AboutSettings>(DEFAULTS.about);
+  const [hero, setHero]           = useState<HeroSettings>(DEFAULTS.hero);
+  const [imgErr, setImgErr]       = useState(false);
+  const [tab, setTab]             = useState<"education" | "experience">("education");
 
   useEffect(() => {
     setIsMounted(true);
-    fetchSettings();
+    Promise.all([
+      supabase.from("about_settings").select("*").limit(1).order("created_at", { ascending: true }).single(),
+      supabase.from("hero_settings").select("*").limit(1).order("created_at", { ascending: true }).single(),
+    ]).then(([{ data: a }, { data: h }]) => {
+      if (a) setAbout({ title: a.title || DEFAULTS.about.title, description: a.description || DEFAULTS.about.description, image_url: a.image_url || "" });
+      if (h) setHero({ status: h.status || "available", available_text: h.available_text, busy_text: h.busy_text, offline_text: h.offline_text });
+    }).finally(() => setLoading(false));
   }, []);
 
-  // Don't render anything on server-side to avoid hydration issues
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
 
-  if (loading) {
-    return (
-      <section id="about" className="relative py-24 overflow-hidden bg-gradient-to-r from-[#1A2942] to-[#131F35]">
-        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const sc = STATUS_CFG[hero.status];
+  const statusLabel = hero.status === "available" ? hero.available_text : hero.status === "busy" ? hero.busy_text : hero.offline_text;
+
+  if (loading) return (
+    <section id="about" className="py-32 flex items-center justify-center">
+      <div className="w-6 h-6 rounded-full border border-teal-400/30 border-t-teal-400 animate-spin" />
+    </section>
+  );
 
   return (
-    <section id="about" className="relative py-24 overflow-hidden bg-[#0B0D17]">
-      {/* Minimal background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl"></div>
+    <section id="about" className="relative py-20 sm:py-28">
+
+      {/* Glass surface: just enough to make text readable over the animated bg */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]" />
+
+      {/* One single centered glow — doesn't compete, just adds depth */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-[500px] h-[300px] bg-teal-500/4 rounded-full blur-[80px]" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
-            Know More About Me
-          </h2>
-          <div className="w-20 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto"></div>
-        </motion.div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 lg:px-16">
+        <div className="flex flex-col lg:flex-row lg:gap-20 xl:gap-28">
 
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-            
-            {/* Left Side - Profile (1/3) */}
+          {/* ══════════════════════════════════════════
+              LEFT COLUMN — desktop only, sticky profile
+              Mobile: hidden, replaced by inline strip below
+          ══════════════════════════════════════════ */}
+          <motion.aside
+            initial={{ opacity: 1, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="hidden lg:flex flex-col gap-8 lg:w-72 xl:w-80 flex-shrink-0 lg:sticky lg:top-28 lg:self-start"
+          >
+            {/* Large profile image */}
+            <div className="relative w-full aspect-[4/5]">
+              {/* Teal glow behind image */}
+              <div className="absolute -inset-1 bg-gradient-to-b from-teal-400/15 via-teal-400/5 to-transparent rounded-2xl blur-md" />
+              <div className="relative w-full h-full rounded-2xl overflow-hidden border border-white/6 bg-gray-900/80">
+                {imgErr || !about.image_url ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                    <Code2 size={36} className="text-teal-400/25" />
+                    <span className="text-gray-700 text-xs">Kayes</span>
+                  </div>
+                ) : (
+                  <Image
+                    src={about.image_url}
+                    alt="Kayes"
+                    fill
+                    className="object-cover hover:scale-[1.02] transition-transform duration-700"
+                    priority
+                    onError={() => setImgErr(true)}
+                  />
+                )}
+                {/* Subtle bottom gradient overlay for text legibility if needed */}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
+              </div>
+
+              {/* Floating name tag at bottom of image */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <p className="text-white font-semibold text-sm leading-none mb-1">Mahmudullah Kayes</p>
+                <p className="text-gray-500 text-xs">Full Stack Developer</p>
+              </div>
+            </div>
+
+            {/* Meta row */}
+            <div className="flex flex-col gap-3 pl-1">
+              <div className="flex items-center gap-2">
+                <MapPin size={11} className="text-gray-700 flex-shrink-0" />
+                <span className="text-gray-600 text-xs">Dhaka, Bangladesh</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${sc.dot} opacity-40`} />
+                  <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${sc.dot}`} />
+                </span>
+                <span className={`text-xs ${sc.text}`}>{statusLabel}</span>
+              </div>
+            </div>
+
+          </motion.aside>
+
+          {/* ══════════════════════════════════════════
+              RIGHT COLUMN — main content (both views)
+          ══════════════════════════════════════════ */}
+          <div className="flex-1 min-w-0 flex flex-col">
+
+            {/* Section heading */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 1, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="lg:col-span-1"
+              transition={{ duration: 0.55 }}
+              className="mb-10 sm:mb-12 lg:mb-14 lg:pt-2"
             >
-              <div className="text-center lg:text-left">
-                {/* Profile Image */}
-                <div className="w-full max-w-sm h-80 mx-auto lg:mx-0 mb-8 relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                    {imageError ? (
-                      <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <Code2 className="w-12 h-12 mx-auto mb-3" />
-                          <p className="text-lg font-semibold">Kayes</p>
-                          <p className="text-sm opacity-70">Full Stack Developer</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <Image
-                        src={settings.image_url}
-                        alt="Kayes - Full Stack Developer"
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        priority
-                        onError={() => setImageError('Failed to load image')}
-                      />
-                    )}
-                  </div>
-                </div>
+              <p className="text-[10px] text-teal-400/50 tracking-[0.3em] uppercase mb-3">About</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+                The person behind the code
+              </h2>
+            </motion.div>
 
-                {/* Name & Role */}
-                <h3 className="text-3xl font-bold text-white mb-2">Mahmudullah Kayes</h3>
-                <p className="text-xl text-blue-400 mb-6">Full Stack Developer</p>
-                
-                {/* Status */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="relative mb-8"
-                >
-                  <div className={`inline-flex items-center gap-3 px-6 py-3 backdrop-blur-sm rounded-2xl shadow-lg transition-all duration-300 group ${
-                    heroSettings.status === 'available' 
-                      ? 'bg-gradient-to-r from-emerald-500/10 via-emerald-600/5 to-emerald-500/10 border border-emerald-500/30 shadow-emerald-500/10 hover:shadow-emerald-500/20'
-                      : heroSettings.status === 'busy'
-                      ? 'bg-gradient-to-r from-orange-500/10 via-orange-600/5 to-orange-500/10 border border-orange-500/30 shadow-orange-500/10 hover:shadow-orange-500/20'
-                      : 'bg-gradient-to-r from-red-500/10 via-red-600/5 to-red-500/10 border border-red-500/30 shadow-red-500/10 hover:shadow-red-500/20'
-                  }`}>
-                    {/* Animated pulse ring */}
-                    <div className="relative">
-                      <div className={`w-3 h-3 rounded-full ${
-                        heroSettings.status === 'available' 
-                          ? 'bg-emerald-400' 
-                          : heroSettings.status === 'busy'
-                          ? 'bg-orange-400'
-                          : 'bg-red-400'
-                      }`}></div>
-                      <div className={`absolute inset-0 w-3 h-3 rounded-full animate-ping opacity-75 ${
-                        heroSettings.status === 'available' 
-                          ? 'bg-emerald-400' 
-                          : heroSettings.status === 'busy'
-                          ? 'bg-orange-400'
-                          : 'bg-red-400'
-                      }`}></div>
+            {/* ── Mobile-only profile strip ── */}
+            <motion.div
+              initial={{ opacity: 1, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55, delay: 0.08 }}
+              className="flex lg:hidden items-center gap-4 mb-8 pb-8 border-b border-white/5"
+            >
+              <div className="relative flex-shrink-0 w-16 h-16">
+                <div className="absolute -inset-px bg-gradient-to-br from-teal-400/20 to-transparent rounded-xl" />
+                <div className="relative w-full h-full rounded-xl overflow-hidden border border-white/6 bg-gray-900">
+                  {imgErr || !about.image_url ? (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Code2 size={20} className="text-teal-400/30" />
                     </div>
-                    <span className={`text-sm font-semibold tracking-wide ${
-                      heroSettings.status === 'available' 
-                        ? 'text-emerald-400' 
-                        : heroSettings.status === 'busy'
-                        ? 'text-orange-400'
-                        : 'text-red-400'
-                    }`}>
-                      {heroSettings.status === 'available' 
-                        ? heroSettings.available_text
-                        : heroSettings.status === 'busy'
-                        ? heroSettings.busy_text
-                        : heroSettings.offline_text
-                      }
-                    </span>
-                    {/* Subtle glow effect */}
-                    <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                      heroSettings.status === 'available' 
-                        ? 'bg-gradient-to-r from-transparent via-emerald-500/5 to-transparent'
-                        : heroSettings.status === 'busy'
-                        ? 'bg-gradient-to-r from-transparent via-orange-500/5 to-transparent'
-                        : 'bg-gradient-to-r from-transparent via-red-500/5 to-transparent'
-                    }`}></div>
-                  </div>
-                </motion.div>
-
-
+                  ) : (
+                    <Image src={about.image_url} alt="Kayes" fill className="object-cover" priority onError={() => setImgErr(true)} />
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5 min-w-0">
+                <p className="text-white font-semibold text-sm leading-none">Mahmudullah Kayes</p>
+                {/* Status — directly under name */}
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${sc.dot} opacity-40`} />
+                    <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${sc.dot}`} />
+                  </span>
+                  <span className={`text-[11px] ${sc.text}`}>{statusLabel}</span>
+                </div>
+                {/* Location — under status */}
+                <div className="flex items-center gap-1">
+                  <MapPin size={9} className="text-gray-500" />
+                  <span className="text-gray-500 text-[11px]">Dhaka, Bangladesh</span>
+                </div>
               </div>
             </motion.div>
 
-            {/* Right Side - Content (2/3) */}
+            {/* ── Bio ── */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 1, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="lg:col-span-2"
+              transition={{ duration: 0.55, delay: 0.12 }}
+              className="space-y-4 mb-10"
             >
-              <div className="space-y-8">
-                {/* Description */}
-                <div className="space-y-6 text-slate-300 text-lg leading-relaxed">
-                  {settings.description.map((paragraph, index) => (
-                    <motion.p
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.6 + index * 0.2 }}
-                    >
-                      {paragraph}
-                    </motion.p>
-                  ))}
-                </div>
+              {about.description.map((p, i) => (
+                <p key={i} className="text-gray-300 text-sm sm:text-[15px] lg:text-base leading-relaxed">{p}</p>
+              ))}
+            </motion.div>
 
-                {/* Education/Experience Toggle */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 1 }}
-                  className="pt-6"
-                >
-                  {/* Glass Effect Flip Toggle */}
-                  <div className="relative mb-6">
-                    <div className="relative bg-gradient-to-r from-slate-900/40 via-slate-800/30 to-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-1.5 max-w-sm overflow-hidden shadow-2xl shadow-black/50">
-                      {/* Glass Sliding Background */}
-                      <div 
-                        className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] backdrop-blur-md border border-white/20 rounded-xl transition-all duration-500 ease-out shadow-2xl ${
-                          activeTab === 'education' 
-                            ? 'left-1.5 bg-gradient-to-br from-blue-500/30 via-blue-600/20 to-blue-700/30 shadow-blue-500/50' 
-                            : 'left-[calc(50%+3px)] bg-gradient-to-br from-purple-500/30 via-purple-600/20 to-purple-700/30 shadow-purple-500/50'
-                        }`}
-                      />
-                      
-                      {/* Inner Glass Highlight */}
-                      <div 
-                        className={`absolute top-2 w-[calc(50%-8px)] h-1 rounded-full transition-all duration-500 ease-out ${
-                          activeTab === 'education' 
-                            ? 'left-2 bg-gradient-to-r from-transparent via-blue-300/60 to-transparent' 
-                            : 'left-[calc(50%+2px)] bg-gradient-to-r from-transparent via-purple-300/60 to-transparent'
-                        }`}
-                      />
-                      
-                      {/* Flip Container */}
-                      <div className="relative flex">
-                        <button
-                          onClick={() => setActiveTab('education')}
-                          className={`relative flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-medium transition-all duration-300 z-10 group ${
-                            activeTab === 'education'
-                              ? 'text-white'
-                              : 'text-slate-400 hover:text-slate-200'
-                          }`}
-                        >
-                          <GraduationCap className={`w-5 h-5 transition-all duration-300 ${
-                            activeTab === 'education' 
-                              ? 'scale-110 drop-shadow-lg' 
-                              : 'group-hover:scale-105'
-                          }`} />
-                          <span className={`text-sm font-bold tracking-wide ${
-                            activeTab === 'education' ? 'drop-shadow-lg' : ''
-                          }`}>Education</span>
-                        </button>
-                        
-                        <button
-                          onClick={() => setActiveTab('experience')}
-                          className={`relative flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-medium transition-all duration-300 z-10 group ${
-                            activeTab === 'experience'
-                              ? 'text-white'
-                              : 'text-slate-400 hover:text-slate-200'
-                          }`}
-                        >
-                          <Briefcase className={`w-5 h-5 transition-all duration-300 ${
-                            activeTab === 'experience' 
-                              ? 'scale-110 drop-shadow-lg' 
-                              : 'group-hover:scale-105'
-                          }`} />
-                          <span className={`text-sm font-bold tracking-wide ${
-                            activeTab === 'experience' ? 'drop-shadow-lg' : ''
-                          }`}>Experience</span>
-                        </button>
+            {/* ── Divider ── */}
+            <div className="h-px bg-white/5 mb-10" />
+
+            {/* ── Education / Experience tabs ── */}
+            <motion.div
+              initial={{ opacity: 1, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55, delay: 0.18 }}
+            >
+              {/* Tab strip */}
+              <div className="flex gap-7 mb-8">
+                {(["education", "experience"] as const).map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    className={`relative pb-2.5 text-[11px] font-semibold tracking-[0.15em] uppercase transition-colors duration-200 ${tab === t ? "text-white" : "text-gray-600 hover:text-gray-400"}`}
+                  >
+                    {t}
+                    {tab === t && (
+                      <motion.div layoutId="tab-line" className="absolute bottom-0 left-0 right-0 h-px bg-teal-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Timeline */}
+              <motion.div
+                key={tab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {(tab === "education" ? EDUCATION : EXPERIENCE).map((item, i, arr) => {
+                  const isExp  = tab === "experience";
+                  const expItem = isExp ? (item as typeof EXPERIENCE[0]) : null;
+                  const isLast  = i === arr.length - 1;
+                  return (
+                    <div key={i} className="flex gap-5">
+                      {/* Spine */}
+                      <div className="flex flex-col items-center flex-shrink-0 pt-[5px]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-teal-400/50 flex-shrink-0" />
+                        {!isLast && <div className="w-px flex-1 bg-white/5 mt-1.5" />}
+                      </div>
+                      {/* Content */}
+                      <div className={`flex-1 min-w-0 ${!isLast ? "pb-8" : ""}`}>
+                        <p className="text-[10px] text-gray-500 tracking-widest uppercase mb-1.5">{item.period}</p>
+                        <p className="text-white text-sm lg:text-base font-medium leading-snug mb-1">
+                          {isExp ? expItem!.role : (item as typeof EDUCATION[0]).degree}
+                        </p>
+                        <p className="text-gray-400 text-xs lg:text-sm mb-2.5">
+                          {isExp ? expItem!.company : (item as typeof EDUCATION[0]).institution}
+                        </p>
+                        {isExp && expItem!.stack && (
+                          <div className="flex flex-wrap gap-2">
+                            {expItem!.stack.map(tag => (
+                              <span key={tag} className="text-[11px] text-gray-400 px-2.5 py-1 rounded-full border border-white/8 bg-white/3">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-
-                  {/* Flip Content Container */}
-                  <div className="relative overflow-hidden">
-                    <div className="space-y-3">
-                      {activeTab === 'education' && (
-                        <motion.div
-                          key="education"
-                          initial={{ opacity: 0, rotateY: 90 }}
-                          animate={{ opacity: 1, rotateY: 0 }}
-                          exit={{ opacity: 0, rotateY: -90 }}
-                          transition={{ duration: 0.5, ease: "easeInOut" }}
-                          className="space-y-6"
-                          style={{ transformStyle: 'preserve-3d' }}
-                        >
-                          <div className="border-l-2 border-blue-500/50 pl-4">
-                            <div className="space-y-6">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white mb-1">
-                                  Bachelor's in Computer Science
-                                </h4>
-                                <div className="flex items-center gap-2 text-blue-400 text-sm font-medium mb-2">
-                                  <GraduationCap className="w-4 h-4" />
-                                  Northern University Bangladesh
-                                  <span className="text-slate-500">•</span>
-                                  <span className="text-slate-400">2025-2028</span>
-                                </div>
-                                <p className="text-slate-300 text-sm">
-                                  Subject: Computer Science and Engineering
-                                </p>
-                              </div>
-                              
-                              <div className="h-px bg-gradient-to-r from-blue-500/30 to-transparent"></div>
-                              
-                              <div>
-                                <h4 className="text-lg font-semibold text-white mb-1">
-                                  Completed Diploma in Computer Science
-                                </h4>
-                                <div className="flex items-center gap-2 text-blue-400 text-sm font-medium mb-2">
-                                <GraduationCap className="w-4 h-4" />
-                                  Shyamoli Ideal Polytechnic Institute
-                                  <span className="text-slate-500">•</span>
-                                  <span className="text-slate-400">2020-2024</span>
-                                </div>
-                                <p className="text-slate-300 text-sm">
-                                  Subject: Computer Science
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {activeTab === 'experience' && (
-                        <motion.div
-                          key="experience"
-                          initial={{ opacity: 0, rotateY: 90 }}
-                          animate={{ opacity: 1, rotateY: 0 }}
-                          exit={{ opacity: 0, rotateY: -90 }}
-                          transition={{ duration: 0.5, ease: "easeInOut" }}
-                          className="space-y-6"
-                          style={{ transformStyle: 'preserve-3d' }}
-                        >
-                          <div className="border-l-2 border-purple-500/50 pl-4">
-                            <div className="space-y-6">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white mb-1">
-                                  Full Stack Developer
-                                </h4>
-                                <div className="flex items-center gap-2 text-purple-400 text-sm font-medium mb-2">
-                                  <Briefcase className="w-4 h-4" />
-                                  Atolyn
-                                  <span className="text-slate-500">•</span>
-                                  <span className="text-slate-400">2024-Present</span>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="text-blue-300 text-xs font-medium">Next.js</span>
-                                  <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-green-300 text-xs font-medium">Laravel</span>
-                                  <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-purple-300 text-xs font-medium">MySQL</span>
-                                </div>
-                              </div>
-                              
-                              <div className="h-px bg-gradient-to-r from-purple-500/30 to-transparent"></div>
-                              
-                              <div>
-                                <h4 className="text-lg font-semibold text-white mb-1">
-                                  Frontend Developer
-                                </h4>
-                                <div className="flex items-center gap-2 text-purple-400 text-sm font-medium mb-2">
-                                  <Code2 className="w-4 h-4" />
-                                  Freelancer
-                                  <span className="text-slate-500">•</span>
-                                  <span className="text-slate-400">2021-2023</span>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="text-red-300 text-xs font-medium">React</span>
-                                  <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-yellow-300 text-xs font-medium">Tailwind CSS</span>
-                                  <span className="text-slate-500 leading-none">•</span>
-                                  <span className="text-blue-300 text-xs font-medium">Bootstrap</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
+                  );
+                })}
+              </motion.div>
             </motion.div>
 
           </div>
@@ -467,4 +326,4 @@ const About = () => {
   );
 };
 
-export default About; 
+export default About;

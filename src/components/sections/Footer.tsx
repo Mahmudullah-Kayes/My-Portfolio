@@ -51,8 +51,7 @@ export default function Footer() {
     fetchSettings();
 
     // Subscribe to changes
-    const channel = supabase
-      .channel('contact_settings_changes')
+    const channel = (supabase.channel('contact_settings_changes') as any)
       .on(
         'postgres_changes',
         {
@@ -67,7 +66,6 @@ export default function Footer() {
       .subscribe();
 
     return () => {
-      // @ts-expect-error: supabase-js v2 type issue, works at runtime
       supabase.removeChannel(channel);
     };
   }, []);
@@ -105,7 +103,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative py-12 overflow-hidden border-t border-slate-800 bg-[#0B1120]">
+    <footer className="relative py-12 overflow-hidden border-t border-slate-800 bg-transparent">
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

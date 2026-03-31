@@ -15,14 +15,14 @@ const debounce = (func: Function, wait: number) => {
 
 // Define special handling for logos that need custom filters
 const technologies = [
-  { name: 'React', logo: '/logos/react.svg', filterClass: "brightness-0 invert" },
-  { name: 'Next.js', logo: '/logos/nextjs.svg', filterClass: "brightness-0 invert" },
-  { name: 'Node.js', logo: '/logos/node-js-svgrepo-com.svg', filterClass: "brightness-0 invert" },
-  { name: 'JavaScript', logo: '/logos/javascript.svg', filterClass: "grayscale contrast-200" },
-  { name: 'MongoDB', logo: '/logos/mongodb.svg', filterClass: "brightness-0 invert" },
-  { name: 'MySQL', logo: '/logos/mysql-logo-svgrepo-com.svg', filterClass: "brightness-0 invert" },
-  { name: 'PHP', logo: '/logos/php.svg', filterClass: "grayscale contrast-150 brightness-150" },
-  { name: 'Laravel', logo: '/logos/laravel-svgrepo-com.svg', filterClass: "brightness-0 invert" },
+  { name: 'React', logo: '/logos/react.svg' },
+  { name: 'Next.js', logo: '/logos/nextjs.svg' },
+  { name: 'Node.js', logo: '/logos/node-js-svgrepo-com.svg' },
+  { name: 'JavaScript', logo: '/logos/javascript.svg' },
+  { name: 'MongoDB', logo: '/logos/mongodb.svg' },
+  { name: 'MySQL', logo: '/logos/mysql-logo-svgrepo-com.svg' },
+  { name: 'PHP', logo: '/logos/php.svg' },
+  { name: 'Laravel', logo: '/logos/laravel-svgrepo-com.svg' },
 ];
 
 export default function TechStack() {
@@ -35,15 +35,16 @@ export default function TechStack() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Initial check
     checkMobile();
-    
-    // Add resize listener
-    window.addEventListener('resize', debounce(checkMobile, 200));
-    
+
+    // Keep the same debounced callback reference for proper cleanup
+    const debouncedCheckMobile = debounce(checkMobile, 200);
+    window.addEventListener('resize', debouncedCheckMobile);
+
     return () => {
-      window.removeEventListener('resize', debounce(checkMobile, 200));
+      window.removeEventListener('resize', debouncedCheckMobile);
     };
   }, []);
 
@@ -69,10 +70,10 @@ export default function TechStack() {
             <img 
               src="${tech.logo}" 
               alt="${tech.name}" 
-              class="object-contain w-full h-full filter ${tech.filterClass} opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+              class="object-contain w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-300" 
             />
           </div>
-          <span class="ml-3 text-sm sm:text-base text-gray-400 font-medium group-hover:text-white transition-colors duration-300 font-['Noto_Sans']">${tech.name}</span>
+          <span class="ml-3 text-sm sm:text-base text-gray-300 font-medium group-hover:text-teal-300 transition-colors duration-300 font-['Noto_Sans']">${tech.name}</span>
         `;
         container.appendChild(div);
       });
@@ -130,31 +131,26 @@ export default function TechStack() {
   }, [isMobile]);
 
   return (
-    <section className="py-16 overflow-hidden bg-[#0B0D17] relative">
-      {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl"></div>
-      </div>
+    <section className="py-16 overflow-hidden bg-transparent relative">
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 1, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true, margin: "-100px" }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12 font-['Noto_Sans'] bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12 font-['Noto_Sans'] bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-500">
             Technologies I Work With
           </h2>
-          
-          <p className="text-slate-400 text-center max-w-2xl mx-auto mb-12">
+
+          <p className="text-gray-300 text-center max-w-2xl mx-auto mb-12">
             I specialize in modern web technologies that enable creating fast, responsive, and user-friendly applications.
           </p>
         </motion.div>
         
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1 }}
           viewport={{ once: true, margin: "-100px" }}

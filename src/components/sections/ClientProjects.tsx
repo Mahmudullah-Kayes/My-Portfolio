@@ -98,12 +98,12 @@ export default function ClientProjects() {
 
   if (isLoading) {
     return (
-      <section id="client-projects" className="py-24 bg-[#0B1120]">
+      <section id="client-projects" className="py-24 bg-transparent">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div 
               className="inline-flex items-center px-4 py-1 mb-6 rounded-full bg-violet-900/30 border border-violet-700/30"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
@@ -114,7 +114,7 @@ export default function ClientProjects() {
             
             <motion.h2 
               className="text-3xl md:text-4xl font-bold mb-6"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
@@ -139,13 +139,13 @@ export default function ClientProjects() {
   }
 
   return (
-    <section id="client-projects" className="py-24 bg-[#0B1120]">
+    <section id="client-projects" className="py-24 bg-transparent">
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <motion.div 
             className="inline-flex items-center px-4 py-1 mb-6 rounded-full bg-violet-900/30 border border-violet-700/30"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
@@ -156,7 +156,7 @@ export default function ClientProjects() {
           
           <motion.h2 
             className="text-3xl md:text-4xl font-bold mb-6"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
@@ -173,7 +173,7 @@ export default function ClientProjects() {
           {industries.length > 1 && (
             <motion.div 
               className="flex flex-wrap justify-center gap-3 mb-12"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -252,15 +252,18 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
 
   return (
     <motion.div
-      className="bg-slate-900/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-800/70 shadow-xl transition-all duration-300 hover:shadow-violet-900/20 hover:border-slate-700/80 group cursor-pointer"
-      initial={{ opacity: 0, y: 20 }}
+      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200/10 bg-slate-900/35 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.9)] ring-1 ring-teal-300/10 backdrop-blur-md transition-all duration-300 hover:border-teal-300/25 hover:shadow-[0_26px_60px_-30px_rgba(20,184,166,0.28)]"
+      initial={{ opacity: 1, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={() => setIsModalOpen(true)}
     >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(45,212,191,0.14),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(99,102,241,0.14),transparent_40%)] opacity-80" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+
       {/* Project image - 16:9 aspect ratio */}
-      <div className="relative w-full pt-[56.25%] overflow-hidden">
+      <div className="relative w-full overflow-hidden pt-[56.25%]">
         {/* Image container */}
         <div className="absolute inset-0 overflow-hidden">
           {!project.image ? (
@@ -276,8 +279,8 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
                 style={{ backgroundImage: `url(${project.image})` }}
               />
               {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                <div className="bg-black/50 px-4 py-2 rounded-lg text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/20">
+                <div className="rounded-lg border border-white/15 bg-slate-900/55 px-4 py-2 text-sm text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
                   Click to view details
                 </div>
               </div>
@@ -287,9 +290,9 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
       </div>
 
       {/* Project details - Enhanced design */}
-      <div className="p-6 bg-gradient-to-b from-slate-900/0 to-slate-900/80">
+      <div className="relative z-10 bg-gradient-to-b from-slate-900/0 to-slate-950/80 p-6">
         {/* Client name */}
-        <span className="text-violet-400 font-medium">
+        <span className="font-medium text-teal-300">
           {project.client}
         </span>
         
@@ -299,12 +302,12 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
         </h3>
         
         {/* Description - Limited to single line */}
-        <p className="text-slate-300 mb-4 truncate">
+        <p className="mb-4 truncate text-slate-200/90">
           {project.description}
         </p>
         
         {/* Divider */}
-        <div className="h-px bg-slate-700/30 my-4"></div>
+        <div className="my-4 h-px bg-gradient-to-r from-transparent via-slate-200/20 to-transparent"></div>
         
         {/* Tech stack with improved visual */}
         <div className="mb-5">
@@ -312,13 +315,13 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
             {project.tech.slice(0, 3).map((tech: string, i) => (
               <span 
                 key={i} 
-                className="px-3 py-1 text-xs font-medium bg-slate-800/80 text-slate-300 rounded-full border border-slate-700/30 transition-all duration-300 hover:bg-slate-800 hover:border-slate-600/50"
+                className="rounded-full border border-slate-500/30 bg-slate-900/55 px-3 py-1 text-xs font-medium text-slate-200 transition-all duration-300 hover:border-teal-300/40 hover:bg-slate-800/70"
               >
                 {tech}
               </span>
             ))}
             {project.tech.length > 3 && (
-              <span className="px-3 py-1 text-xs font-medium bg-slate-800/80 text-slate-300 rounded-full border border-slate-700/30">
+              <span className="rounded-full border border-slate-500/30 bg-slate-900/55 px-3 py-1 text-xs font-medium text-slate-200">
                 +{project.tech.length - 3} more
               </span>
             )}
@@ -332,7 +335,7 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
               href={project.links.live} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-indigo-800 to-violet-900 rounded-lg text-white font-medium overflow-hidden group border border-indigo-700/50 shadow-md hover:shadow-lg hover:border-indigo-500/80 transition-all duration-300"
+              className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg border border-indigo-500/40 bg-gradient-to-r from-teal-500/25 to-indigo-500/35 px-6 py-2.5 font-medium text-white shadow-md transition-all duration-300 hover:border-teal-300/60 hover:shadow-lg hover:shadow-indigo-500/30"
               onClick={(e) => e.stopPropagation()} // Prevent modal from opening when clicking the button
             >
               {/* Glass angle animation overlay */}
@@ -340,8 +343,8 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
                 <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-sweep"></span>
               </span>
               
-              <Globe className="w-4 h-4 mr-2 relative z-10 text-cyan-300" />
-              <span className="relative z-10 text-cyan-50 font-semibold tracking-wide">Live Site</span>
+              <Globe className="relative z-10 mr-2 h-4 w-4 text-teal-200" />
+              <span className="relative z-10 font-semibold tracking-wide text-teal-50">Live Site</span>
             </Link>
           )}
           
