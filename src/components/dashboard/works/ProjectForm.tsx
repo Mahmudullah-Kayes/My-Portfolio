@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { X, Save, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Project } from '@/app/dashboard/works/page';
+import { toast } from 'sonner';
 
 interface ProjectFormProps {
   project: Project | null;
@@ -156,7 +157,7 @@ const ProjectForm = ({
       // Pass the form data back to parent component
       onSave(formData);
     } catch (error: any) {
-      alert('Failed to save project. Please try again.');
+      toast.error('Failed to save project. Please try again.');
       setIsLoading(false);
     }
   };

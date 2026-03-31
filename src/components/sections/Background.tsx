@@ -312,17 +312,24 @@ const MeteorShower = () => {
         const [headColor, trailColor, glowColor] = m.palette;
 
         const sharedStyle = {
-          left: `${m.x}vw`,
-          top: 0,
           borderRadius: "999px",
-          transformOrigin: "bottom center",
-          ["--rot" as any]: `${m.angleDeg}deg`,
-          ["--start" as any]: m.start,
-          animation: `meteorFall ${m.dur}s linear ${m.delay}s infinite`,
         };
 
         return (
-          <div key={m.id} className="absolute" style={{ left: `${m.x}vw`, top: 0, width: 0, height: 0 }}>
+          <div
+            key={m.id}
+            className="absolute"
+            style={{
+              left: `${m.x}vw`,
+              top: 0,
+              width: 0,
+              height: 0,
+              transformOrigin: "top center",
+              ["--rot" as any]: `${m.angleDeg}deg`,
+              ["--start" as any]: m.start,
+              animation: `meteorFall ${m.dur}s linear ${m.delay}s infinite`,
+            }}
+          >
             <div
               className="absolute"
               style={{
@@ -341,7 +348,8 @@ const MeteorShower = () => {
               style={{
                 ...sharedStyle,
                 left: 0,
-                top: `${m.tailLen - m.headW * 1.5}px`,
+                // Align head center to trail end to avoid visible offset
+                top: `${m.tailLen - m.headW}px`,
                 width: `${m.headW * 2}px`,
                 height: `${m.headW * 2}px`,
                 marginLeft: `${-m.headW}px`,

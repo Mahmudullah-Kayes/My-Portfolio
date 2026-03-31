@@ -63,9 +63,9 @@ export default function AboutSettingsPage() {
 
       if (error) throw error;
 
-      alert('Settings saved successfully!');
+      toast.success('About settings saved successfully.');
     } catch (error) {
-      alert('Error saving about settings. Please try again.');
+      toast.error('Failed to save about settings. Please try again.');
     } finally {
       setSaving(false);
     }

@@ -5,6 +5,7 @@ import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { ProjectForm, ProjectsList } from '@/components/dashboard/works';
 import { supabase } from '@/lib/supabase';
 import { Plus, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Define Project type
 export type Project = {
@@ -31,6 +32,8 @@ export default function WorksPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   
   // Default empty project
   const defaultProject: Project = {
@@ -82,7 +85,7 @@ export default function WorksPage() {
       setProjects(formattedProjects);
     } catch (error: any) {
       console.error('Error fetching projects:', error.message);
-      alert('Failed to load projects. Please try again.');
+      toast.error('Failed to load projects. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -90,6 +93,7 @@ export default function WorksPage() {
 
   // Save project to Supabase
   const saveProject = async (project: Project) => {
+    setIsSaving(true);
     try {
       const projectData = {
         title: project.title,
@@ -126,15 +130,18 @@ export default function WorksPage() {
       }
 
       // Refresh projects list
-      fetchProjects();
+      await fetchProjects();
       
       // Close form
       setIsFormOpen(false);
       setEditingProject(null);
+      toast.success(project.id ? 'Project updated successfully.' : 'Project added successfully.');
     } catch (error: any) {
       console.error('Error saving project:', error);
-      alert(`Failed to save project: ${error.message}`);
+      toast.error(`Failed to save project: ${error.message}`);
       throw error;
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -144,6 +151,7 @@ export default function WorksPage() {
       return;
     }
 
+    setDeletingId(id);
     try {
       const { error } = await supabase
         .from('projects')
@@ -155,10 +163,13 @@ export default function WorksPage() {
       }
 
       // Refresh projects list
-      fetchProjects();
+      await fetchProjects();
+      toast.success('Project deleted successfully.');
     } catch (error: any) {
       console.error('Error deleting project:', error);
-      alert(`Failed to delete project: ${error.message}`);
+      toast.error(`Failed to delete project: ${error.message}`);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -187,6 +198,13 @@ export default function WorksPage() {
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 size={40} className="animate-spin text-purple-500" />
+        </div>
+      ) : isSaving || deletingId !== null ? (
+        <div className="flex justify-center items-center h-24">
+          <div className="inline-flex items-center gap-2 text-slate-300">
+            <Loader2 size={18} className="animate-spin" />
+            <span>{isSaving ? 'Saving project...' : 'Deleting project...'}</span>
+          </div>
         </div>
       ) : (
         <div className="bg-slate-900 rounded-lg border border-slate-800 p-6">

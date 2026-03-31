@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Github, Linkedin, Mail, Twitter, Facebook } from 'lucide-react';
+import { Github, Linkedin, Mail, Facebook } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface ContactSettings {
@@ -11,6 +11,7 @@ interface ContactSettings {
     github: string;
     linkedin: string;
     whatsapp: string;
+    twitter?: string;
     facebook: string;
   };
 }
@@ -28,6 +29,15 @@ const defaultSettings: ContactSettings = {
 export default function Footer() {
   const [settings, setSettings] = useState<ContactSettings>(defaultSettings);
 
+  const normalizeWhatsAppHref = (value?: string) => {
+    if (!value) return '';
+    const trimmed = value.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+
+    const cleaned = trimmed.replace(/[^\d+]/g, '').replace(/^\+/, '');
+    return cleaned ? `https://wa.me/${cleaned}` : '';
+  };
+
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -41,7 +51,18 @@ export default function Footer() {
         if (error) throw error;
 
         if (data) {
-          setSettings(data);
+          const links = (data.social_links || {}) as ContactSettings['social_links'];
+          const legacyWhatsapp = links.whatsapp || links.twitter || '';
+
+          setSettings({
+            email: data.email || defaultSettings.email,
+            social_links: {
+              github: links.github || defaultSettings.social_links.github,
+              linkedin: links.linkedin || defaultSettings.social_links.linkedin,
+              whatsapp: normalizeWhatsAppHref(legacyWhatsapp) || defaultSettings.social_links.whatsapp,
+              facebook: links.facebook || defaultSettings.social_links.facebook,
+            },
+          });
         }
       } catch (error) {
         // Silently handle error and use default settings
