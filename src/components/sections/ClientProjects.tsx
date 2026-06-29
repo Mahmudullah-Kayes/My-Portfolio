@@ -118,7 +118,7 @@ export default function ClientProjects() {
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <motion.div 
-            className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
+            className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -224,16 +224,21 @@ export default function ClientProjects() {
   );
 }
 
-// --- Minimalist Glassmorphism Card ---
+// --- Premium Glassmorphism Card ---
 const ClientProjectCard = ({ project, index }: { project: ClientProject, index: number }) => {
   return (
     <motion.div
-      className="group flex flex-col h-full rounded-xl overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.05]"
+      className="group relative flex flex-col h-full rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-500 hover:border-violet-400/30 hover:shadow-[0_8px_32px_rgba(139,92,246,0.15)]"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
+      {/* Glass edge top highlight */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent z-20" />
+      {/* Ambient inner glow on hover */}
+      <div className="pointer-events-none absolute -inset-px bg-gradient-to-b from-violet-500/0 via-violet-500/0 to-violet-500/0 group-hover:from-violet-500/5 group-hover:to-violet-500/0 transition-all duration-500 rounded-2xl" />
+
       {/* Strict 16:9 Image Ratio */}
       <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
         {!project.image ? (
@@ -245,12 +250,12 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
             src={project.image}
             alt={project.title}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
           />
         )}
         
-        {/* Subtle gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+        {/* Deep gradient overlay for readability of tech pills */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
         
         {/* Tech stack overlaid on image bottom - Always visible */}
         {project.tech.length > 0 && (
@@ -258,7 +263,7 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
             {project.tech.slice(0, 3).map((tech: string, i) => (
               <span 
                 key={i} 
-                className="rounded-full border border-white/10 bg-black/60 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono font-medium text-slate-300"
+                className="rounded-full border border-white/10 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono font-medium text-slate-200"
               >
                 {tech}
               </span>
@@ -268,7 +273,7 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
       </div>
 
       {/* Content Body - Clean and Minimal */}
-      <div className="relative flex flex-col flex-grow p-5 pt-4">
+      <div className="relative flex flex-col flex-grow p-5 pt-4 z-10">
         {/* Client Name */}
         <span className="text-[10px] font-semibold text-violet-400 tracking-widest uppercase mb-2 truncate">
           {project.client}
@@ -279,27 +284,35 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
           {project.title}
         </h3>
         
-        {/* Actions - Compact and clean */}
-        <div className="flex items-center gap-2 mt-auto pt-4 border-t border-white/5">
+        {/* Actions - Tempting Live Button on Right */}
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+          {project.case_study_url ? (
+            <Link 
+              href={project.case_study_url}
+              className="inline-flex items-center text-slate-400 hover:text-white text-xs font-semibold transition-colors duration-300"
+            >
+              Case Study
+              <ChevronRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          ) : (
+            <div /> // Empty div to maintain flex spacing if no case study
+          )}
+          
           {project.live_url && (
             <Link 
               href={project.live_url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center px-3 py-1.5 rounded-md bg-white text-black text-[11px] font-bold transition-all duration-300 hover:bg-violet-500 hover:text-white"
+              className="group/btn relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(139,92,246,0.7)] hover:scale-105 overflow-hidden"
             >
-              <Globe className="mr-1.5 h-3 w-3" />
-              Live Site
-            </Link>
-          )}
-          
-          {project.case_study_url && (
-            <Link 
-              href={project.case_study_url}
-              className="inline-flex items-center px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-slate-300 text-[11px] font-semibold transition-all duration-300 hover:bg-white/10 hover:text-white"
-            >
-              Case Study
-              <ArrowUpRight className="ml-1 h-3 w-3" />
+              {/* Shine sweep effect */}
+              <span className="absolute inset-0 overflow-hidden rounded-full">
+                <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover/btn:animate-glass-sweep"></span>
+              </span>
+              
+              <Globe className="relative h-3.5 w-3.5" />
+              <span className="relative tracking-wide">Live Site</span>
+              <ArrowUpRight className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
             </Link>
           )}
         </div>
