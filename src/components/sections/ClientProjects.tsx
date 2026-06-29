@@ -6,7 +6,6 @@ import { Globe, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
-import Image from 'next/image';
 
 interface ClientProject {
   id: number;
@@ -34,7 +33,7 @@ interface ProjectItem {
   is_client_project: boolean;
 }
 
-const PROJECTS_PER_PAGE = 6;
+const PROJECTS_PER_PAGE = 8;
 
 export default function ClientProjects() {
   const [projects, setProjects] = useState<ClientProject[]>([]);
@@ -70,7 +69,7 @@ export default function ClientProjects() {
         }));
         
         setProjects(formattedProjects);
-        setCurrentPage(1); // Reset to first page
+        setCurrentPage(1);
       } catch (err) {
         setError('Failed to load client projects');
         setProjects([]);
@@ -221,8 +220,8 @@ export default function ClientProjects() {
           )}
         </div>
         
-        {/* Projects grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {/* Projects grid - 4 columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
           {paginatedProjects.map((project, index) => (
             <ClientProjectCard key={project.id} project={project} index={index} />
           ))}
@@ -293,25 +292,25 @@ export default function ClientProjects() {
   );
 }
 
-// ClientProjectCard component - Simplified without modal
+// ClientProjectCard component - Clean 4-column optimized design
 const ClientProjectCard = ({ project, index }: { project: ClientProject, index: number }) => {
   return (
     <motion.div
-      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200/10 bg-slate-900/35 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.9)] ring-1 ring-teal-300/10 backdrop-blur-md transition-all duration-300 hover:border-teal-300/25 hover:shadow-[0_26px_60px_-30px_rgba(20,184,166,0.28)]"
+      className="group relative overflow-hidden rounded-xl border border-slate-200/10 bg-slate-900/35 shadow-lg shadow-slate-900/30 ring-1 ring-teal-300/10 backdrop-blur-md transition-all duration-300 hover:border-teal-300/30 hover:shadow-xl hover:shadow-teal-900/20 flex flex-col h-full"
       initial={{ opacity: 1, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.06 }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(45,212,191,0.14),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(99,102,241,0.14),transparent_40%)] opacity-80" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(45,212,191,0.08),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(99,102,241,0.08),transparent_35%)] opacity-60" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
 
-      {/* Project image - 16:9 aspect ratio with Next.js Image optimization */}
-      <div className="relative w-full overflow-hidden pt-[56.25%]">
+      {/* Project image - 16:9 aspect ratio, clean display */}
+      <div className="relative w-full overflow-hidden pt-[56.25%] flex-shrink-0 bg-slate-800">
         <div className="absolute inset-0 overflow-hidden">
           {!project.image ? (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-              <p className="text-lg text-white/70 font-medium px-6 py-3 bg-slate-900/50 backdrop-blur-sm rounded-lg text-center">
+              <p className="text-xs text-white/60 font-medium px-3 text-center">
                 {project.client}
               </p>
             </div>
@@ -321,73 +320,61 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
                 src={project.image}
                 alt={project.title}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
-              {/* Hover overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/20">
-                <div className="rounded-lg border border-white/15 bg-slate-900/55 px-4 py-2 text-sm text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-                  Click to visit site
-                </div>
-              </div>
+              {/* Subtle hover overlay only */}
+              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/25"></div>
             </>
           )}
         </div>
       </div>
 
-      {/* Project details */}
-      <div className="relative z-10 bg-gradient-to-b from-slate-900/0 to-slate-950/80 p-6">
-        {/* Client name */}
-        <span className="font-medium text-teal-300 text-sm">
+      {/* Project details - Compact & Clean */}
+      <div className="relative z-10 bg-gradient-to-b from-slate-900/0 to-slate-950/90 p-3.5 flex flex-col flex-grow">
+        {/* Client name - Minimal */}
+        <span className="font-medium text-teal-300/90 text-xs tracking-wide uppercase mb-1.5">
           {project.client}
         </span>
         
-        {/* Title */}
-        <h3 className="text-xl font-bold text-white mt-2 mb-2 line-clamp-2">
+        {/* Title - Prominent but compact */}
+        <h3 className="text-sm font-bold text-white mb-3 line-clamp-2 leading-tight">
           {project.title}
         </h3>
         
-        {/* Description - Limited to 2 lines */}
-        <p className="mb-4 text-slate-200/90 text-sm line-clamp-2">
-          {project.description}
-        </p>
-        
-        {/* Divider */}
-        <div className="my-4 h-px bg-gradient-to-r from-transparent via-slate-200/20 to-transparent"></div>
-        
-        {/* Tech stack */}
-        <div className="mb-5">
-          <div className="flex flex-wrap gap-2">
+        {/* Tech stack - Compact pills */}
+        <div className="mb-3.5 flex-grow">
+          <div className="flex flex-wrap gap-1">
             {project.tech.slice(0, 3).map((tech: string, i) => (
               <span 
                 key={i} 
-                className="rounded-full border border-slate-500/30 bg-slate-900/55 px-3 py-1 text-xs font-medium text-slate-200 transition-all duration-300 hover:border-teal-300/40 hover:bg-slate-800/70"
+                className="rounded-full border border-slate-500/25 bg-slate-800/50 px-2 py-0.5 text-[10px] font-medium text-slate-300 whitespace-nowrap"
               >
                 {tech}
               </span>
             ))}
             {project.tech.length > 3 && (
-              <span className="rounded-full border border-slate-500/30 bg-slate-900/55 px-3 py-1 text-xs font-medium text-slate-200">
+              <span className="rounded-full border border-slate-500/25 bg-slate-800/50 px-2 py-0.5 text-[10px] font-medium text-slate-400">
                 +{project.tech.length - 3}
               </span>
             )}
           </div>
         </div>
         
-        {/* Action button - Only Live Site */}
+        {/* Action button - Compact */}
         {project.live_url && (
           <Link 
             href={project.live_url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="group/btn relative inline-flex items-center justify-center w-full overflow-hidden rounded-lg border border-indigo-500/40 bg-gradient-to-r from-teal-500/25 to-indigo-500/35 px-6 py-2.5 font-medium text-white shadow-md transition-all duration-300 hover:border-teal-300/60 hover:shadow-lg hover:shadow-indigo-500/30"
+            className="group/btn relative inline-flex items-center justify-center w-full overflow-hidden rounded-lg border border-indigo-500/40 bg-gradient-to-r from-teal-500/20 to-indigo-500/30 px-3 py-2 font-medium text-xs text-white shadow-md transition-all duration-300 hover:border-teal-300/60 hover:shadow-lg hover:shadow-indigo-500/20"
           >
-            {/* Glass sweep animation overlay */}
+            {/* Glass sweep animation */}
             <span className="absolute inset-0 overflow-hidden">
-              <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-sweep"></span>
+              <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-glass-sweep"></span>
             </span>
             
-            <Globe className="relative z-10 mr-2 h-4 w-4 text-teal-200 transition-transform group-hover/btn:scale-110" />
-            <span className="relative z-10 font-semibold tracking-wide text-teal-50">Visit Live Site</span>
+            <Globe className="relative z-10 mr-1 h-3 w-3 text-teal-200" />
+            <span className="relative z-10 font-semibold tracking-wide text-teal-50">Visit</span>
           </Link>
         )}
       </div>
