@@ -8,4 +8,4 @@ Next.js 16 • React 19 • TypeScript • Tailwind CSS 4 • Supabase • Frame
 
 ## Live Demo
 
-[Add your live link here]
+**Visit** - https://kayes-portfolio.vercel.app/
