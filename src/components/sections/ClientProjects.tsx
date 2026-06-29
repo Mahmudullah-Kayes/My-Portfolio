@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Globe, Briefcase, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -105,23 +105,23 @@ export default function ClientProjects() {
 
   if (isLoading) {
     return (
-      <section id="client-projects" className="py-24 bg-transparent">
+      <section id="client-projects" className="relative py-24 bg-transparent overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div 
-              className="inline-flex items-center px-4 py-1 mb-6 rounded-full bg-violet-900/30 border border-violet-700/30"
-              initial={{ opacity: 1, y: 20 }}
+              className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-violet-500/10 border border-violet-500/20 backdrop-blur-sm"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
               <Briefcase className="w-4 h-4 mr-2 text-violet-400" />
-              <span className="text-sm font-medium text-violet-400">Client Work</span>
+              <span className="text-sm font-medium text-violet-300">Client Work</span>
             </motion.div>
             
             <motion.h2 
-              className="text-3xl md:text-4xl font-bold mb-6"
-              initial={{ opacity: 1, y: 20 }}
+              className="text-3xl md:text-5xl font-bold mb-6 tracking-tight"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
@@ -132,8 +132,13 @@ export default function ClientProjects() {
               </span>
             </motion.h2>
           </div>
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
+          <div className="flex justify-center items-center py-20">
+            <div className="relative">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Briefcase className="h-5 w-5 text-violet-400/50" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -145,24 +150,27 @@ export default function ClientProjects() {
   }
 
   return (
-    <section id="client-projects" className="py-24 bg-transparent">
-      <div className="container mx-auto px-4">
+    <section id="client-projects" className="relative py-24 bg-transparent overflow-hidden">
+      {/* Background ambient glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.08),transparent_70%)]" />
+      
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <motion.div 
-            className="inline-flex items-center px-4 py-1 mb-6 rounded-full bg-violet-900/30 border border-violet-700/30"
-            initial={{ opacity: 1, y: 20 }}
+            className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-violet-500/10 border border-violet-500/20 backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
             <Briefcase className="w-4 h-4 mr-2 text-violet-400" />
-            <span className="text-sm font-medium text-violet-400">Client Work</span>
+            <span className="text-sm font-medium text-violet-300">Client Work</span>
           </motion.div>
           
           <motion.h2 
-            className="text-3xl md:text-4xl font-bold mb-6"
-            initial={{ opacity: 1, y: 20 }}
+            className="text-3xl md:text-5xl font-bold mb-6 tracking-tight"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
@@ -176,18 +184,18 @@ export default function ClientProjects() {
           {/* Industry filters - only show if we have multiple industries */}
           {industries.length > 1 && (
             <motion.div 
-              className="flex flex-wrap justify-center gap-3 mb-12"
-              initial={{ opacity: 1, y: 20 }}
+              className="flex flex-wrap justify-center gap-2.5 mb-12"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <button 
                 onClick={() => setActiveIndustry(null)}
-                className={`relative px-6 py-2 rounded-full overflow-hidden transition-all duration-300 ${
+                className={`relative px-5 py-2 rounded-full overflow-hidden transition-all duration-300 text-sm ${
                   activeIndustry === null 
-                    ? 'bg-gradient-to-r from-indigo-800 to-violet-900 text-white shadow-lg shadow-violet-900/20 border border-indigo-700/50' 
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-violet-900/30 border border-indigo-500/50' 
+                    : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800'
                 }`}
               >
                 {activeIndustry === null && (
@@ -195,17 +203,17 @@ export default function ClientProjects() {
                     <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-sweep"></span>
                   </span>
                 )}
-                <span className={`relative z-10 font-medium ${activeIndustry === null ? 'text-cyan-50' : ''}`}>All Industries</span>
+                <span className="relative z-10 font-medium">All Industries</span>
               </button>
               
               {industries.map(industry => (
                 <button 
                   key={industry}
                   onClick={() => setActiveIndustry(industry)}
-                  className={`relative px-6 py-2 rounded-full overflow-hidden transition-all duration-300 ${
+                  className={`relative px-5 py-2 rounded-full overflow-hidden transition-all duration-300 text-sm ${
                     activeIndustry === industry
-                      ? 'bg-gradient-to-r from-indigo-800 to-violet-900 text-white shadow-lg shadow-violet-900/20 border border-indigo-700/50' 
-                      : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                      ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-violet-900/30 border border-indigo-500/50' 
+                      : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800'
                   }`}
                 >
                   {activeIndustry === industry && (
@@ -213,15 +221,15 @@ export default function ClientProjects() {
                       <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-sweep"></span>
                     </span>
                   )}
-                  <span className={`relative z-10 font-medium ${activeIndustry === industry ? 'text-cyan-50' : ''}`}>{industry}</span>
+                  <span className="relative z-10 font-medium">{industry}</span>
                 </button>
               ))}
             </motion.div>
           )}
         </div>
         
-        {/* Projects grid - 4 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+        {/* Projects grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
           {paginatedProjects.map((project, index) => (
             <ClientProjectCard key={project.id} project={project} index={index} />
           ))}
@@ -234,21 +242,21 @@ export default function ClientProjects() {
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="flex items-center justify-center w-10 h-10 rounded-lg border border-slate-700/50 bg-slate-900/50 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
               aria-label="Previous page"
             >
-              <ChevronLeft className="w-5 h-5 text-slate-400" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
 
             {/* Page numbers */}
-            <div className="flex gap-1">
+            <div className="flex gap-2">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 ${
+                  className={`flex items-center justify-center w-10 h-10 rounded-lg font-medium transition-all duration-300 text-sm ${
                     currentPage === page
-                      ? 'bg-gradient-to-r from-indigo-800 to-violet-900 text-white shadow-lg shadow-violet-900/20 border border-indigo-700/50'
+                      ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-violet-900/30 border border-indigo-500/50'
                       : 'bg-slate-900/50 text-slate-300 hover:bg-slate-800 border border-slate-700/50'
                   }`}
                 >
@@ -261,10 +269,10 @@ export default function ClientProjects() {
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="flex items-center justify-center w-10 h-10 rounded-lg border border-slate-700/50 bg-slate-900/50 text-slate-400 hover:bg-slate-800 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
               aria-label="Next page"
             >
-              <ChevronRight className="w-5 h-5 text-slate-400" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         )}
@@ -273,15 +281,9 @@ export default function ClientProjects() {
       {/* Animation keyframes */}
       <style jsx global>{`
         @keyframes glass-sweep {
-          0% {
-            transform: translateX(-100%);
-          }
-          20% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
+          0% { transform: translateX(-100%); }
+          20% { transform: translateX(100%); }
+          100% { transform: translateX(100%); }
         }
         
         .animate-glass-sweep {
@@ -292,90 +294,104 @@ export default function ClientProjects() {
   );
 }
 
-// ClientProjectCard component - Clean 4-column optimized design
+// ClientProjectCard component - Premium UI Design
 const ClientProjectCard = ({ project, index }: { project: ClientProject, index: number }) => {
   return (
     <motion.div
-      className="group relative overflow-hidden rounded-xl border border-slate-200/10 bg-slate-900/35 shadow-lg shadow-slate-900/30 ring-1 ring-teal-300/10 backdrop-blur-md transition-all duration-300 hover:border-teal-300/30 hover:shadow-xl hover:shadow-teal-900/20 flex flex-col h-full"
-      initial={{ opacity: 1, y: 20 }}
+      className="group relative flex flex-col h-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-md transition-all duration-500 hover:border-violet-400/30 hover:bg-slate-900/60 hover:shadow-[0_20px_50px_-15px_rgba(79,70,229,0.3)]"
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.06 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: index * 0.05, ease: [0.215, 0.61, 0.355, 1] }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(45,212,191,0.08),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(99,102,241,0.08),transparent_35%)] opacity-60" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-
-      {/* Project image - 16:9 aspect ratio, clean display */}
-      <div className="relative w-full overflow-hidden pt-[56.25%] flex-shrink-0 bg-slate-800">
-        <div className="absolute inset-0 overflow-hidden">
-          {!project.image ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-              <p className="text-xs text-white/60 font-medium px-3 text-center">
-                {project.client}
-              </p>
+      {/* Image Section */}
+      <div className="relative aspect-video w-full overflow-hidden">
+        {!project.image ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent_70%)]"></div>
+            <div className="relative flex flex-col items-center gap-2 p-4">
+              <Globe className="h-8 w-8 text-slate-600" />
+              <p className="text-xs text-slate-500 font-medium text-center">{project.client}</p>
             </div>
-          ) : (
-            <>
-              <img
-                src={project.image}
-                alt={project.title}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              {/* Subtle hover overlay only */}
-              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/25"></div>
-            </>
-          )}
+          </div>
+        ) : (
+          <>
+            <img
+              src={project.image}
+              alt={project.title}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent opacity-90"></div>
+          </>
+        )}
+        
+        {/* Client Badge */}
+        <div className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/60 px-3 py-1 backdrop-blur-md">
+          <Briefcase className="h-3 w-3 text-violet-400" />
+          <span className="text-[10px] font-semibold text-slate-200 uppercase tracking-wider">{project.client}</span>
         </div>
       </div>
 
-      {/* Project details - Compact & Clean */}
-      <div className="relative z-10 bg-gradient-to-b from-slate-900/0 to-slate-950/90 p-3.5 flex flex-col flex-grow">
-        {/* Client name - Minimal */}
-        <span className="font-medium text-teal-300/90 text-xs tracking-wide uppercase mb-1.5">
-          {project.client}
+      {/* Content Section */}
+      <div className="relative flex flex-col flex-grow p-5 pt-4">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2">
+          {project.industry}
         </span>
         
-        {/* Title - Prominent but compact */}
-        <h3 className="text-sm font-bold text-white mb-3 line-clamp-2 leading-tight">
+        <h3 className="mb-2 text-base font-bold text-white transition-colors duration-300 group-hover:text-violet-300 line-clamp-1">
           {project.title}
         </h3>
         
-        {/* Tech stack - Compact pills */}
-        <div className="mb-3.5 flex-grow">
-          <div className="flex flex-wrap gap-1">
+        {project.description && (
+          <p className="mb-4 text-xs text-slate-400 line-clamp-2 flex-grow">
+            {project.description}
+          </p>
+        )}
+        
+        {project.tech.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-1.5">
             {project.tech.slice(0, 3).map((tech: string, i) => (
               <span 
                 key={i} 
-                className="rounded-full border border-slate-500/25 bg-slate-800/50 px-2 py-0.5 text-[10px] font-medium text-slate-300 whitespace-nowrap"
+                className="rounded-md border border-slate-700/50 bg-slate-800/50 px-2 py-1 text-[10px] font-medium text-slate-300 transition-colors duration-300 group-hover:border-violet-500/30"
               >
                 {tech}
               </span>
             ))}
             {project.tech.length > 3 && (
-              <span className="rounded-full border border-slate-500/25 bg-slate-800/50 px-2 py-0.5 text-[10px] font-medium text-slate-400">
+              <span className="rounded-md border border-slate-700/50 bg-slate-800/50 px-2 py-1 text-[10px] font-medium text-slate-400">
                 +{project.tech.length - 3}
               </span>
             )}
           </div>
-        </div>
+        )}
         
-        {/* Action button - Compact */}
-        {project.live_url && (
-          <Link 
-            href={project.live_url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="group/btn relative inline-flex items-center justify-center w-full overflow-hidden rounded-lg border border-indigo-500/40 bg-gradient-to-r from-teal-500/20 to-indigo-500/30 px-3 py-2 font-medium text-xs text-white shadow-md transition-all duration-300 hover:border-teal-300/60 hover:shadow-lg hover:shadow-indigo-500/20"
-          >
-            {/* Glass sweep animation */}
-            <span className="absolute inset-0 overflow-hidden">
-              <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-glass-sweep"></span>
-            </span>
-            
-            <Globe className="relative z-10 mr-1 h-3 w-3 text-teal-200" />
-            <span className="relative z-10 font-semibold tracking-wide text-teal-50">Visit</span>
-          </Link>
+        {/* Action Buttons */}
+        {(project.live_url || project.case_study_url) && (
+          <div className="flex items-center gap-2 mt-auto">
+            {project.live_url && (
+              <Link 
+                href={project.live_url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group/btn relative inline-flex items-center justify-center flex-1 overflow-hidden rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-xs font-semibold text-violet-300 transition-all duration-300 hover:border-violet-400/60 hover:bg-violet-500/20 hover:text-violet-200"
+              >
+                <Globe className="mr-2 h-3.5 w-3.5" />
+                <span className="relative z-10">Live</span>
+                <ArrowUpRight className="ml-2 h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+              </Link>
+            )}
+            {project.case_study_url && (
+              <Link 
+                href={project.case_study_url}
+                className="inline-flex items-center justify-center flex-1 rounded-lg border border-slate-700/50 bg-slate-800/50 px-4 py-2 text-xs font-medium text-slate-300 transition-all duration-300 hover:border-slate-600 hover:bg-slate-700/50 hover:text-white"
+              >
+                Case Study
+              </Link>
+            )}
+          </div>
         )}
       </div>
     </motion.div>
