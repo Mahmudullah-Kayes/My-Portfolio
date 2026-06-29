@@ -203,14 +203,8 @@
     }
   }
 
-  /* ─── REMOVED UNUSED ANIMATIONS ─── */
-  /* The following animations were removed as their components are no longer used:
-     - gentleGlow (GlowOrbs - removed)
-     - subtleWave (SubtleNebula - removed)
-     - cosmicFloat (CosmicDust - removed)
-     - planetRotate (PlanetaryOrbs - removed)
-     - auroraFlow (AuroraEffects - removed)
-     - starCluster (Never used)
-     - gravBend (GravitationalLensing - removed)
-  */
+@keyframes glass-sweep {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(100%) skewX(-12deg); }
+}
 }

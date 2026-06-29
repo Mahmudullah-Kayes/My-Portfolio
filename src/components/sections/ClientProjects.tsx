@@ -284,7 +284,7 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
           {project.title}
         </h3>
         
-        {/* Actions - Tempting Live Button on Right */}
+        {/*Live Button*/}
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
           {project.case_study_url ? (
             <Link 
@@ -295,25 +295,69 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
               <ChevronRight className="ml-1 h-3.5 w-3.5" />
             </Link>
           ) : (
-            <div /> // Empty div to maintain flex spacing if no case study
+            <div />
           )}
           
           {project.live_url && (
-            <Link 
-              href={project.live_url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group/btn relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all duration-300 hover:shadow-[0_0_20px_rgba(139,92,246,0.7)] hover:scale-105 overflow-hidden"
-            >
-              {/* Shine sweep effect */}
-              <span className="absolute inset-0 overflow-hidden rounded-full">
-                <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover/btn:animate-glass-sweep"></span>
-              </span>
-              
-              <Globe className="relative h-3.5 w-3.5" />
-              <span className="relative tracking-wide">Live Site</span>
-              <ArrowUpRight className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-            </Link>
+<Link 
+  href={project.live_url} 
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="group/btn relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-white text-xs font-semibold tracking-wide overflow-hidden transition-all duration-500 ease-out hover:scale-[1.04] active:scale-[0.97]"
+  style={{
+    background: 'linear-gradient(135deg, #6366f1 0%, #7c3aed 40%, #8b5cf6 70%, #6366f1 100%)',
+    backgroundSize: '200% 200%',
+    boxShadow: `
+      0 0 0 1px rgba(139, 92, 246, 0.25),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(99, 102, 241, 0.25),
+      0 8px 24px rgba(139, 92, 246, 0.2)
+    `,
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.backgroundPosition = '100% 100%';
+    e.currentTarget.style.boxShadow = `
+      0 0 0 1px rgba(139, 92, 246, 0.4),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 4px 16px rgba(99, 102, 241, 0.4),
+      0 12px 36px rgba(139, 92, 246, 0.35),
+      0 0 60px rgba(139, 92, 246, 0.15)
+    `;
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.backgroundPosition = '0% 0%';
+    e.currentTarget.style.boxShadow = `
+      0 0 0 1px rgba(139, 92, 246, 0.25),
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(99, 102, 241, 0.25),
+      0 8px 24px rgba(139, 92, 246, 0.2)
+    `;
+  }}
+>
+  {/* Top-edge highlight */}
+  <span className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+  
+  {/* Inner top bevel */}
+  <span 
+    className="absolute inset-x-[1px] top-[1px] h-[40%] rounded-t-full opacity-20"
+    style={{ background: 'linear-gradient(to bottom, white, transparent)' }}
+  />
+
+  {/* Shine sweep */}
+  <span className="absolute inset-0 overflow-hidden rounded-full">
+    <span 
+      className="absolute -inset-[100%] skew-x-12 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
+      style={{
+        background: 'linear-gradient(to right, transparent 0%, transparent 35%, rgba(255,255,255,0.25) 50%, transparent 65%, transparent 100%)',
+        animation: 'glass-sweep 0.8s ease-out forwards',
+      }}
+    />
+  </span>
+
+  <Globe className="relative h-3.5 w-3.5 opacity-90 group-hover/btn:opacity-100 transition-opacity duration-300" />
+  <span className="relative">Live Site</span>
+  <ArrowUpRight className="relative h-3.5 w-3.5 transition-transform duration-500 ease-out group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+</Link>
           )}
         </div>
       </div>
