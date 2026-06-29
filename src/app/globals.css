@@ -203,8 +203,5 @@
     }
   }
 
-@keyframes glass-sweep {
-  0% { transform: translateX(-100%) skewX(-12deg); }
-  100% { transform: translateX(100%) skewX(-12deg); }
-}
+
 }

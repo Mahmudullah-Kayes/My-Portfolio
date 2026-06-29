@@ -284,7 +284,7 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
           {project.title}
         </h3>
         
-        {/*Live Button*/}
+        {/* Actions */}
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
           {project.case_study_url ? (
             <Link 
@@ -299,68 +299,85 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
           )}
           
           {project.live_url && (
-<Link 
-  href={project.live_url} 
-  target="_blank" 
-  rel="noopener noreferrer"
-  className="group/btn relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-white text-xs font-semibold tracking-wide overflow-hidden transition-all duration-500 ease-out hover:scale-[1.04] active:scale-[0.97]"
-  style={{
-    background: 'linear-gradient(135deg, #6366f1 0%, #7c3aed 40%, #8b5cf6 70%, #6366f1 100%)',
-    backgroundSize: '200% 200%',
-    boxShadow: `
-      0 0 0 1px rgba(139, 92, 246, 0.25),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 4px 12px rgba(99, 102, 241, 0.25),
-      0 8px 24px rgba(139, 92, 246, 0.2)
-    `,
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.backgroundPosition = '100% 100%';
-    e.currentTarget.style.boxShadow = `
-      0 0 0 1px rgba(139, 92, 246, 0.4),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 4px 16px rgba(99, 102, 241, 0.4),
-      0 12px 36px rgba(139, 92, 246, 0.35),
-      0 0 60px rgba(139, 92, 246, 0.15)
-    `;
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.backgroundPosition = '0% 0%';
-    e.currentTarget.style.boxShadow = `
-      0 0 0 1px rgba(139, 92, 246, 0.25),
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 4px 12px rgba(99, 102, 241, 0.25),
-      0 8px 24px rgba(139, 92, 246, 0.2)
-    `;
-  }}
->
-  {/* Top-edge highlight */}
-  <span className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-  
-  {/* Inner top bevel */}
-  <span 
-    className="absolute inset-x-[1px] top-[1px] h-[40%] rounded-t-full opacity-20"
-    style={{ background: 'linear-gradient(to bottom, white, transparent)' }}
-  />
-
-  {/* Shine sweep */}
-  <span className="absolute inset-0 overflow-hidden rounded-full">
-    <span 
-      className="absolute -inset-[100%] skew-x-12 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
-      style={{
-        background: 'linear-gradient(to right, transparent 0%, transparent 35%, rgba(255,255,255,0.25) 50%, transparent 65%, transparent 100%)',
-        animation: 'glass-sweep 0.8s ease-out forwards',
-      }}
-    />
-  </span>
-
-  <Globe className="relative h-3.5 w-3.5 opacity-90 group-hover/btn:opacity-100 transition-opacity duration-300" />
-  <span className="relative">Live Site</span>
-  <ArrowUpRight className="relative h-3.5 w-3.5 transition-transform duration-500 ease-out group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-</Link>
+            <Link
+              href={project.live_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="login-btn-outer"
+              aria-label="View Live Site"
+            >
+              <div className="login-btn-inner">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <g data-name="Layer 2" id="Layer_2">
+                    <path d="m15.626 11.769a6 6 0 1 0 -7.252 0 9.008 9.008 0 0 0 -5.374 8.231 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 9.008 9.008 0 0 0 -5.374-8.231zm-7.626-4.769a4 4 0 1 1 4 4 4 4 0 0 1 -4-4zm10 14h-12a1 1 0 0 1 -1-1 7 7 0 0 1 14 0 1 1 0 0 1 -1 1z" />
+                  </g>
+                </svg>
+                <p>Live</p>
+              </div>
+            </Link>
           )}
         </div>
       </div>
     </motion.div>
   );
 };
+
+/* ── Login Button Styles ── */
+const styles = `
+.login-btn-outer {
+  width: 100px;
+  height: 41px;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: linear-gradient(
+    to bottom right,
+    #2e8eff 0%,
+    rgba(46, 142, 255, 0) 30%
+  );
+  background-color: rgba(46, 142, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.login-btn-outer:hover,
+.login-btn-outer:focus {
+  background-color: rgba(46, 142, 255, 0.7);
+  box-shadow: 0 0 10px rgba(46, 142, 255, 0.5);
+  outline: none;
+}
+
+.login-btn-inner {
+  width: 96px;
+  height: 37px;
+  border-radius: 11px;
+  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.login-btn-inner svg {
+  width: 22px;
+  height: 22px;
+  fill: #fff;
+  flex-shrink: 0;
+}
+`;
+
+if (typeof document !== 'undefined') {
+  const existingId = 'login-btn-styles';
+  if (!document.getElementById(existingId)) {
+    const tag = document.createElement('style');
+    tag.id = existingId;
+    tag.textContent = styles;
+    document.head.appendChild(tag);
+  }
+}
