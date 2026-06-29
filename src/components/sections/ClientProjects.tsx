@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Briefcase, ChevronLeft, ChevronRight, ArrowUpRight, Star } from 'lucide-react';
+import { Globe, Briefcase, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -98,12 +98,11 @@ export default function ClientProjects() {
 
   if (isLoading) {
     return (
-      <section id="client-projects" className="relative py-24 bg-[#06060f] overflow-hidden">
+      <section id="client-projects" className="relative py-24 bg-transparent overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex justify-center items-center py-32">
             <div className="relative">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500"></div>
-              <Star className="absolute inset-0 m-auto h-5 w-5 text-fuchsia-300 animate-pulse" />
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-violet-500"></div>
             </div>
           </div>
         </div>
@@ -114,34 +113,29 @@ export default function ClientProjects() {
   if (projects.length === 0) return null;
 
   return (
-    <section id="client-projects" className="relative py-24 bg-[#06060f] overflow-hidden">
-      {/* Ambient Galaxy Background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(168,85,247,0.15),_transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(34,211,238,0.1),_transparent_50%)]" />
-      {/* Starry dots effect */}
-      <div className="pointer-events-none absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-
+    <section id="client-projects" className="relative py-24 bg-transparent overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <motion.div 
-            className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-fuchsia-500/10 border border-fuchsia-400/20 backdrop-blur-sm"
+            className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Briefcase className="w-4 h-4 mr-2 text-fuchsia-400" />
-            <span className="text-sm font-medium text-fuchsia-300 tracking-wider uppercase">Client Work</span>
+            <Briefcase className="w-4 h-4 mr-2 text-violet-400" />
+            <span className="text-xs font-medium text-slate-300 tracking-wider uppercase">Client Work</span>
           </motion.div>
           
           <motion.h2 
-            className="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-fuchsia-100 to-cyan-200"
+            className="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            Interstellar Web Solutions
+            Projects I've Delivered for Clients
           </motion.h2>
           
           {industries.length > 1 && (
@@ -156,11 +150,11 @@ export default function ClientProjects() {
                 onClick={() => setActiveIndustry(null)}
                 className={`px-5 py-2 rounded-full transition-all duration-300 text-sm font-medium ${
                   activeIndustry === null 
-                    ? 'bg-gradient-to-r from-fuchsia-600 to-indigo-600 text-white shadow-lg shadow-fuchsia-900/40' 
-                    : 'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10'
+                    ? 'bg-white text-black shadow-lg' 
+                    : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/10'
                 }`}
               >
-                All Galaxies
+                All
               </button>
               
               {industries.map(industry => (
@@ -169,8 +163,8 @@ export default function ClientProjects() {
                   onClick={() => setActiveIndustry(industry)}
                   className={`px-5 py-2 rounded-full transition-all duration-300 text-sm font-medium ${
                     activeIndustry === industry
-                      ? 'bg-gradient-to-r from-fuchsia-600 to-indigo-600 text-white shadow-lg shadow-fuchsia-900/40' 
-                      : 'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10'
+                      ? 'bg-white text-black shadow-lg' 
+                      : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/10'
                   }`}
                 >
                   {industry}
@@ -193,10 +187,10 @@ export default function ClientProjects() {
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               aria-label="Previous page"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
 
             <div className="flex gap-2">
@@ -204,10 +198,10 @@ export default function ClientProjects() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`flex items-center justify-center w-10 h-10 rounded-lg font-medium transition-all duration-300 text-sm ${
+                  className={`flex items-center justify-center w-9 h-9 rounded-lg font-medium transition-all duration-300 text-sm ${
                     currentPage === page
-                      ? 'bg-gradient-to-r from-fuchsia-600 to-indigo-600 text-white shadow-lg shadow-fuchsia-900/40'
-                      : 'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10'
+                      ? 'bg-white text-black'
+                      : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/10'
                   }`}
                 >
                   {page}
@@ -218,10 +212,10 @@ export default function ClientProjects() {
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               aria-label="Next page"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -230,33 +224,33 @@ export default function ClientProjects() {
   );
 }
 
-// --- Mobile-First Cosmic Card Design ---
+// --- Minimalist Glassmorphism Card ---
 const ClientProjectCard = ({ project, index }: { project: ClientProject, index: number }) => {
   return (
     <motion.div
-      className="group flex flex-col h-full rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-xl shadow-2xl shadow-indigo-950/50 transition-all duration-300 hover:border-fuchsia-400/40"
-      initial={{ opacity: 0, y: 30 }}
+      className="group flex flex-col h-full rounded-xl overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.05]"
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
     >
       {/* Strict 16:9 Image Ratio */}
       <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
         {!project.image ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.15),transparent_70%)]">
-            <Globe className="w-12 h-12 text-fuchsia-500/40" />
+          <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent_70%)]">
+            <Globe className="w-10 h-10 text-slate-700" />
           </div>
         ) : (
           <img
             src={project.image}
             alt={project.title}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
           />
         )}
         
-        {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a17] via-transparent to-transparent"></div>
+        {/* Subtle gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
         
         {/* Tech stack overlaid on image bottom - Always visible */}
         {project.tech.length > 0 && (
@@ -264,69 +258,48 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
             {project.tech.slice(0, 3).map((tech: string, i) => (
               <span 
                 key={i} 
-                className="rounded-full border border-white/20 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono font-medium text-cyan-300 shadow-sm"
+                className="rounded-full border border-white/10 bg-black/60 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono font-medium text-slate-300"
               >
                 {tech}
               </span>
             ))}
-            {project.tech.length > 3 && (
-              <span className="rounded-full border border-white/20 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono font-medium text-fuchsia-300">
-                +{project.tech.length - 3}
-              </span>
-            )}
           </div>
         )}
       </div>
 
-      {/* Content Body - Always Visible for Mobile & PC */}
+      {/* Content Body - Clean and Minimal */}
       <div className="relative flex flex-col flex-grow p-5 pt-4">
-        {/* Client & Industry Row */}
-        <div className="flex items-center gap-2 mb-3 text-xs">
-          <span className="font-semibold text-cyan-400 tracking-wide uppercase truncate">
-            {project.client}
-          </span>
-          <span className="text-slate-500">•</span>
-          <span className="text-fuchsia-400/90 font-medium tracking-wide uppercase truncate">
-            {project.industry}
-          </span>
-        </div>
+        {/* Client Name */}
+        <span className="text-[10px] font-semibold text-violet-400 tracking-widest uppercase mb-2 truncate">
+          {project.client}
+        </span>
         
         {/* Title */}
-        <h3 className="text-lg font-bold text-white mb-2 tracking-tight leading-snug transition-colors duration-300 group-hover:text-fuchsia-300">
+        <h3 className="text-lg font-bold text-white mb-4 tracking-tight leading-snug flex-grow transition-colors duration-300 group-hover:text-violet-300">
           {project.title}
         </h3>
         
-        {/* Description */}
-        <p className="text-sm text-slate-400 line-clamp-2 mb-5 flex-grow">
-          {project.description}
-        </p>
-        
-        {/* Actions - Always visible, mobile friendly */}
-        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
+        {/* Actions - Compact and clean */}
+        <div className="flex items-center gap-2 mt-auto pt-4 border-t border-white/5">
           {project.live_url && (
             <Link 
               href={project.live_url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className={`group/btn relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-r from-fuchsia-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-fuchsia-900/40 transition-all duration-300 hover:shadow-fuchsia-700/50 hover:scale-[1.02] ${
-                project.case_study_url ? 'flex-1' : 'w-full'
-              }`}
+              className="inline-flex items-center px-3 py-1.5 rounded-md bg-white text-black text-[11px] font-bold transition-all duration-300 hover:bg-violet-500 hover:text-white"
             >
-              <Globe className="mr-2 h-3.5 w-3.5" />
-              <span className="relative z-10 tracking-wide">Visit Site</span>
-              <ArrowUpRight className="ml-2 h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+              <Globe className="mr-1.5 h-3 w-3" />
+              Live Site
             </Link>
           )}
           
           {project.case_study_url && (
             <Link 
               href={project.case_study_url}
-              className={`inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-300 backdrop-blur-sm transition-all duration-300 hover:bg-white/10 hover:text-white hover:border-white/20 ${
-                project.live_url ? 'flex-1' : 'w-full'
-              }`}
+              className="inline-flex items-center px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-slate-300 text-[11px] font-semibold transition-all duration-300 hover:bg-white/10 hover:text-white"
             >
               Case Study
-              <ChevronRight className="ml-1 h-3.5 w-3.5" />
+              <ArrowUpRight className="ml-1 h-3 w-3" />
             </Link>
           )}
         </div>
