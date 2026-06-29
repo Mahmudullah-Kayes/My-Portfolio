@@ -26,17 +26,11 @@ const Background = () => {
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <div className="absolute inset-0 bg-black" />
       <ClientOnly>
-        <GlowOrbs />
-        <SubtleNebula />
         {showEffects && (
           <>
             <StarField />
             <FloatingParticles />
-            <CosmicDust />
             <MeteorShower />
-            <PlanetaryOrbs />
-            <AuroraEffects />
-            <GravitationalLensing />
           </>
         )}
       </ClientOnly>
@@ -108,170 +102,6 @@ const FloatingParticles = () => {
     </div>
   );
 };
-
-const GlowOrbs = () => (
-  <div className="absolute inset-0 z-[1]">
-    {[
-      { x: 20, y: 15, s: 120, c: "rgba(6,182,212,.12)", d: 0, dur: 8 },
-      { x: 80, y: 75, s: 100, c: "rgba(99,102,241,.10)", d: 3, dur: 10 },
-      { x: 10, y: 80, s: 90, c: "rgba(56,189,248,.06)", d: 6, dur: 9 },
-    ].map((o, i) => (
-      <div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${o.x}%`,
-          top: `${o.y}%`,
-          width: `${o.s}px`,
-          height: `${o.s}px`,
-          background: o.c,
-          filter: "blur(20px)",
-          animation: `gentleGlow ${o.dur}s ease-in-out ${o.d}s infinite`,
-        }}
-      />
-    ))}
-  </div>
-);
-
-const SubtleNebula = () => (
-  <div className="absolute inset-0 z-0">
-    {[
-      { x: 30, y: 25, s: 200, c: "rgba(6,182,212,.035)", d: 0, dur: 25 },
-      { x: 70, y: 60, s: 180, c: "rgba(99,102,241,.03)", d: 8, dur: 30 },
-      { x: 15, y: 75, s: 150, c: "rgba(56,189,248,.02)", d: 15, dur: 35 },
-    ].map((n, i) => (
-      <div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${n.x}%`,
-          top: `${n.y}%`,
-          width: `${n.s}px`,
-          height: `${n.s}px`,
-          background: n.c,
-          filter: "blur(60px)",
-          animation: `subtleWave ${n.dur}s ease-in-out ${n.d}s infinite`,
-        }}
-      />
-    ))}
-  </div>
-);
-
-const CosmicDust = () => {
-  const dust = useMemo(
-    () =>
-      Array.from({ length: 16 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 1.5 + 0.5,
-        delay: Math.random() * 20,
-        dur: 15 + Math.random() * 10,
-      })),
-    []
-  );
-
-  return (
-    <div className="absolute inset-0 z-[2]">
-      {dust.map((d) => (
-        <div
-          key={d.id}
-          className="absolute rounded-full bg-sky-200/10"
-          style={{
-            left: `${d.x}%`,
-            top: `${d.y}%`,
-            width: `${d.size}px`,
-            height: `${d.size}px`,
-            animation: `cosmicFloat ${d.dur}s ease-in-out ${d.delay}s infinite`,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-const PlanetaryOrbs = () => (
-  <div className="absolute inset-0 z-[1]">
-    {[
-      {
-        x: 5,
-        y: 20,
-        s: 40,
-        bg: "radial-gradient(circle at 30% 30%,rgba(255,100,100,.15),rgba(150,50,150,.08))",
-        d: 0,
-        dur: 60,
-      },
-      {
-        x: 90,
-        y: 80,
-        s: 25,
-        bg: "radial-gradient(circle at 30% 30%,rgba(100,150,255,.12),rgba(50,100,200,.06))",
-        d: 20,
-        dur: 80,
-      },
-      {
-        x: 85,
-        y: 15,
-        s: 15,
-        bg: "radial-gradient(circle at 30% 30%,rgba(150,255,150,.1),rgba(100,200,100,.05))",
-        d: 40,
-        dur: 50,
-      },
-    ].map((p, i) => (
-      <div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${p.x}%`,
-          top: `${p.y}%`,
-          width: `${p.s}px`,
-          height: `${p.s}px`,
-          background: p.bg,
-          animation: `planetRotate ${p.dur}s linear ${p.d}s infinite`,
-        }}
-      />
-    ))}
-  </div>
-);
-
-const AuroraEffects = () => (
-  <div className="absolute inset-0 z-0">
-    {[
-      {
-        x: 20,
-        y: 10,
-        w: 300,
-        h: 100,
-        bg: "linear-gradient(45deg,rgba(0,255,150,.08),rgba(100,200,255,.05))",
-        d: 0,
-        dur: 18,
-      },
-      {
-        x: 60,
-        y: 70,
-        w: 250,
-        h: 80,
-        bg: "linear-gradient(-45deg,rgba(255,100,200,.06),rgba(150,100,255,.04))",
-        d: 9,
-        dur: 22,
-      },
-    ].map((a, i) => (
-      <div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${a.x}%`,
-          top: `${a.y}%`,
-          width: `${a.w}px`,
-          height: `${a.h}px`,
-          background: a.bg,
-          filter: "blur(40px)",
-          animation: `auroraFlow ${a.dur}s ease-in-out ${a.d}s infinite`,
-        }}
-      />
-    ))}
-  </div>
-);
 
 const METEOR_PALETTES = [
   ["rgba(255,255,255,1)", "rgba(180,220,255,0)", "rgba(160,210,255,0.55)"],
@@ -348,7 +178,6 @@ const MeteorShower = () => {
               style={{
                 ...sharedStyle,
                 left: 0,
-                // Align head center to trail end to avoid visible offset
                 top: `${m.tailLen - m.headW}px`,
                 width: `${m.headW * 2}px`,
                 height: `${m.headW * 2}px`,
@@ -364,26 +193,5 @@ const MeteorShower = () => {
     </div>
   );
 };
-
-const GravitationalLensing = () => (
-  <div className="absolute inset-0 z-[5]">
-    {[{ x: 30, y: 40, s: 80, d: 0 }, { x: 70, y: 60, s: 60, d: 5 }].map((l, i) => (
-      <div
-        key={i}
-        className="absolute rounded-full"
-        style={{
-          left: `${l.x}%`,
-          top: `${l.y}%`,
-          width: `${l.s}px`,
-          height: `${l.s}px`,
-          border: "2px solid rgba(255,255,255,.1)",
-          background: "radial-gradient(ellipse at center,transparent 30%,rgba(200,220,255,.1) 40%,transparent 60%)",
-          filter: "blur(2px)",
-          animation: `gravBend 15s ease-in-out ${l.d}s infinite`,
-        }}
-      />
-    ))}
-  </div>
-);
 
 export default Background;

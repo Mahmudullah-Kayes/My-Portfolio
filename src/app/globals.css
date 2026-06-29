@@ -130,6 +130,22 @@
     animation: blink 0.7s infinite step-end;
   }
 
+  /* ─── Hero Animations ─── */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%) skewX(12deg);
+    }
+    100% {
+      transform: translateX(100%) skewX(12deg);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out 1s infinite;
+  }
+
+  /* ─── Background Animations - Only used components ─── */
+  /* StarField */
   @keyframes twinkle {
     0%, 100% {
       opacity: 0.3;
@@ -141,6 +157,7 @@
     }
   }
 
+  /* FloatingParticles */
   @keyframes floatUp {
     0% {
       transform: translateY(100vh) scale(0);
@@ -158,91 +175,7 @@
     }
   }
 
-  @keyframes gentleGlow {
-    0%, 100% {
-      opacity: 0.1;
-      transform: scale(0.8);
-    }
-    50% {
-      opacity: 0.3;
-      transform: scale(1.1);
-    }
-  }
-
-  @keyframes subtleWave {
-    0%, 100% {
-      transform: translateX(0) translateY(0) rotate(0deg);
-      opacity: 0.05;
-    }
-    33% {
-      transform: translateX(30px) translateY(-20px) rotate(120deg);
-      opacity: 0.1;
-    }
-    66% {
-      transform: translateX(-20px) translateY(30px) rotate(240deg);
-      opacity: 0.08;
-    }
-  }
-
-  @keyframes cosmicFloat {
-    0%, 100% {
-      transform: translateX(0) translateY(0) rotate(0deg);
-      opacity: 0.2;
-    }
-    25% {
-      transform: translateX(20px) translateY(-15px) rotate(90deg);
-      opacity: 0.4;
-    }
-    50% {
-      transform: translateX(40px) translateY(10px) rotate(180deg);
-      opacity: 0.6;
-    }
-    75% {
-      transform: translateX(10px) translateY(25px) rotate(270deg);
-      opacity: 0.3;
-    }
-  }
-
-  @keyframes planetRotate {
-    0% {
-      transform: rotate(0deg) scale(1);
-      opacity: 0.1;
-    }
-    50% {
-      opacity: 0.2;
-    }
-    100% {
-      transform: rotate(360deg) scale(1);
-      opacity: 0.1;
-    }
-  }
-
-  @keyframes auroraFlow {
-    0%, 100% {
-      transform: translateX(-50%) translateY(0) skewX(0deg);
-      opacity: 0.05;
-    }
-    33% {
-      transform: translateX(-40%) translateY(-20px) skewX(5deg);
-      opacity: 0.15;
-    }
-    66% {
-      transform: translateX(-60%) translateY(-10px) skewX(-5deg);
-      opacity: 0.1;
-    }
-  }
-
-  @keyframes starCluster {
-    0%, 100% {
-      opacity: 0.4;
-      transform: scale(1) rotate(0deg);
-    }
-    50% {
-      opacity: 0.8;
-      transform: scale(1.1) rotate(180deg);
-    }
-  }
-
+  /* MeteorShower - Diagonal fall from 135 to 315 degrees */
   @keyframes meteorFall {
     0% {
       transform: rotate(var(--rot, -35deg)) translateY(var(--start, -20vh));
@@ -260,17 +193,7 @@
     }
   }
 
-  @keyframes gravBend {
-    0%, 100% {
-      transform: scaleX(1) scaleY(1);
-      opacity: 0.3;
-    }
-    50% {
-      transform: scaleX(1.3) scaleY(0.7);
-      opacity: 0.7;
-    }
-  }
-
+  /* Utility for blink effect */
   @keyframes blink {
     from, to {
       opacity: 1;
@@ -279,4 +202,15 @@
       opacity: 0;
     }
   }
+
+  /* ─── REMOVED UNUSED ANIMATIONS ─── */
+  /* The following animations were removed as their components are no longer used:
+     - gentleGlow (GlowOrbs - removed)
+     - subtleWave (SubtleNebula - removed)
+     - cosmicFloat (CosmicDust - removed)
+     - planetRotate (PlanetaryOrbs - removed)
+     - auroraFlow (AuroraEffects - removed)
+     - starCluster (Never used)
+     - gravBend (GravitationalLensing - removed)
+  */
 }
