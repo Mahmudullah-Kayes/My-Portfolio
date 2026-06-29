@@ -285,22 +285,22 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
         </h3>
         
         {/* Actions */}
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+        <div className="flex items-center justify-end mt-auto pt-4 border-t border-white/5">
           {project.live_url && (
             <Link
               href={project.live_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="login-btn-outer"
-              aria-label="View Live Site"
+              className="visit-btn-outer"
+              aria-label="Visit Live Site"
             >
-              <div className="login-btn-inner">
-                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <g data-name="Layer 2" id="Layer_2">
-                    <path d="m15.626 11.769a6 6 0 1 0 -7.252 0 9.008 9.008 0 0 0 -5.374 8.231 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 9.008 9.008 0 0 0 -5.374-8.231zm-7.626-4.769a4 4 0 1 1 4 4 4 4 0 0 1 -4-4zm10 14h-12a1 1 0 0 1 -1-1 7 7 0 0 1 14 0 1 1 0 0 1 -1 1z" />
-                  </g>
+              <div className="visit-btn-inner">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1 -4 10 15.3 15.3 0 0 1 -4 -10 15.3 15.3 0 0 1 4 -10z"></path>
                 </svg>
-                <p>Live</p>
+                <p>Visit Site</p>
               </div>
             </Link>
           )}
@@ -310,10 +310,10 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
   );
 };
 
-/* ── Login Button Styles ── */
+/* ── Visit Button Styles ── */
 const styles = `
-.login-btn-outer {
-  width: 125px;
+.visit-btn-outer {
+  width: 120px;
   height: 41px;
   border-radius: 13px;
   cursor: pointer;
@@ -330,33 +330,43 @@ const styles = `
   text-decoration: none;
 }
 
-.login-btn-outer:hover,
-.login-btn-outer:focus {
+.visit-btn-outer:hover,
+.visit-btn-outer:focus {
   background-color: rgba(46, 142, 255, 0.7);
   box-shadow: 0 0 10px rgba(46, 142, 255, 0.5);
   outline: none;
 }
 
-.login-btn-inner {
-  width: 121px;
+.visit-btn-inner {
+  width: 116px;
   height: 37px;
   border-radius: 11px;
   background-color: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   color: #fff;
   font-weight: 600;
-  font-size: 12.5px;
+  font-size: 13px;
   font-family: inherit;
 }
 
-.login-btn-icon {
-  width: 20px;
-  height: 20px;
-  fill: #fff;
+.visit-btn-inner svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
   stroke: #fff;
   flex-shrink: 0;
 }
 `;
+
+if (typeof document !== 'undefined') {
+  const existingId = 'visit-btn-styles';
+  if (!document.getElementById(existingId)) {
+    const tag = document.createElement('style');
+    tag.id = existingId;
+    tag.textContent = styles;
+    document.head.appendChild(tag);
+  }
+}
