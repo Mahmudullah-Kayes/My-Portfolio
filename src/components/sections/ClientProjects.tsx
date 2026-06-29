@@ -286,18 +286,6 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
         
         {/* Actions */}
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-          {project.case_study_url ? (
-            <Link 
-              href={project.case_study_url}
-              className="inline-flex items-center text-slate-400 hover:text-white text-xs font-semibold transition-colors duration-300"
-            >
-              Case Study
-              <ChevronRight className="ml-1 h-3.5 w-3.5" />
-            </Link>
-          ) : (
-            <div />
-          )}
-          
           {project.live_url && (
             <Link
               href={project.live_url}
@@ -325,7 +313,7 @@ const ClientProjectCard = ({ project, index }: { project: ClientProject, index: 
 /* ── Login Button Styles ── */
 const styles = `
 .login-btn-outer {
-  width: 100px;
+  width: 125px;
   height: 41px;
   border-radius: 13px;
   cursor: pointer;
@@ -350,34 +338,25 @@ const styles = `
 }
 
 .login-btn-inner {
-  width: 96px;
+  width: 121px;
   height: 37px;
   border-radius: 11px;
   background-color: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   color: #fff;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12.5px;
   font-family: inherit;
 }
 
-.login-btn-inner svg {
-  width: 22px;
-  height: 22px;
+.login-btn-icon {
+  width: 20px;
+  height: 20px;
   fill: #fff;
+  stroke: #fff;
   flex-shrink: 0;
 }
 `;
-
-if (typeof document !== 'undefined') {
-  const existingId = 'login-btn-styles';
-  if (!document.getElementById(existingId)) {
-    const tag = document.createElement('style');
-    tag.id = existingId;
-    tag.textContent = styles;
-    document.head.appendChild(tag);
-  }
-}
