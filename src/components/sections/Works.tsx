@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, ExternalLink, Github, Globe, X } from 'lucide-react';
-import Image from 'next/image';
+import { Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabase';
-import React from 'react';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 interface Project {
   id: number;
@@ -17,660 +15,377 @@ interface Project {
   isLongImage: boolean;
   category: 'web' | 'app';
   tech: string[];
-  links: {
-    live: string;
-    github?: string;
-  }
+  live_url?: string;
+  github_url?: string;
 }
 
+interface ProjectItem {
+  id: number;
+  title: string;
+  description?: string;
+  image?: string;
+  is_long_image?: boolean;
+  category?: string;
+  tech?: string[];
+  live_url?: string;
+  github_url?: string;
+  created_at: string;
+  is_client_project: boolean;
+}
+
+const PROJECTS_PER_PAGE = 6;
+
 const Works = () => {
-  const [activeCategory, setActiveCategory] = useState<'all' | 'web' | 'app'>('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<'all' | 'web' | 'app'>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const projectsPerPage = 6; // 2 rows of 3 projects
-  
-  // Fetch projects from Supabase
+
   useEffect(() => {
-    const fetchProjects = async () => {
+    async function fetchProjects() {
       try {
         setIsLoading(true);
         setError(null);
         
-        const { data, error } = await (supabase as any)
+        // FIX: Cast to SupabaseClient here
+        const { data, error } = await (supabase as SupabaseClient)
           .from('projects')
           .select('*')
-          .eq('is_client_project', false) // Only fetch personal projects
+          .eq('is_client_project', false)
           .order('created_at', { ascending: false });
-          
-        if (error) {
-          throw error;
-        }
         
-        if (!data || data.length === 0) {
-          setProjects([]);
-          return;
-        }
+        if (error) throw error;
         
-        // Transform data from Supabase format to our component format
-        const formattedProjects: Project[] = data.map((item: any) => ({
+        const formattedProjects: Project[] = (data || []).map((item: ProjectItem) => ({
           id: item.id,
           title: item.title,
           description: item.description || '',
           image: item.image || '',
-          category: item.category as 'web' | 'app',
           isLongImage: item.is_long_image || false,
+          category: (item.category as 'web' | 'app') || 'web',
           tech: item.tech || [],
-          links: {
-            live: item.live_url || '',
-            github: item.github_url || undefined
-          }
+          live_url: item.live_url || undefined,
+          github_url: item.github_url || undefined
         }));
         
         setProjects(formattedProjects);
+        setCurrentPage(1);
       } catch (err) {
         setError('Failed to load projects');
         setProjects([]);
       } finally {
         setIsLoading(false);
       }
-    };
+    }
     
     fetchProjects();
   }, []);
 
-  const filteredProjects = activeCategory === 'all' 
-    ? projects 
-    : projects.filter(project => project.category === activeCategory);
-
-  // Calculate pagination
-  const indexOfLastProject = currentPage * projectsPerPage;
-  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-
-  // Change page
-  const paginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    // Smooth scroll to top of projects section
-    document.getElementById('works')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Reset to first page when category changes
   useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory]);
 
+  const filteredProjects = activeCategory === 'all' 
+    ? projects 
+    : projects.filter(p => p.category === activeCategory);
+
+  const totalPages = Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE);
+  const startIdx = (currentPage - 1) * PROJECTS_PER_PAGE;
+  const paginatedProjects = filteredProjects.slice(startIdx, startIdx + PROJECTS_PER_PAGE);
+
+  if (error) return null;
+
+  if (isLoading) {
+    return (
+      <section id="works" className="relative py-24 bg-transparent overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center py-32">
+            <div className="relative">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-violet-500"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (projects.length === 0) return null;
+
   return (
-    <section id="works" className="relative py-24 overflow-hidden bg-transparent">
-      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
+    <section id="works" className="relative py-24 bg-transparent overflow-hidden">
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <motion.div 
-            className="inline-flex items-center px-4 py-1 mb-6 rounded-full bg-purple-900/30 border border-purple-700/30"
-            initial={{ opacity: 1, y: 20 }}
+            className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-sm font-medium text-purple-400">Personal Projects</span>
+            <Globe className="w-4 h-4 mr-2 text-violet-400" />
+            <span className="text-xs font-medium text-slate-300 tracking-wider uppercase">Personal Work</span>
           </motion.div>
           
           <motion.h2 
-            className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400"
-            initial={{ opacity: 1, y: 20 }}
+            className="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
             My Personal Projects
           </motion.h2>
+
           <motion.p 
-            className="text-lg text-slate-300 mb-8"
-            initial={{ opacity: 1, y: 20 }}
+            className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Explore projects I've built to experiment with new technologies,
-            solve interesting problems, and showcase my coding skills.
+            Explore projects I've built to experiment with new technologies, solve interesting problems, and showcase my skills.
           </motion.p>
           
-          {/* Filter buttons */}
+          {/* Filter Buttons */}
           <motion.div 
-            className="flex justify-center space-x-4 mb-12"
-            initial={{ opacity: 1, y: 20 }}
+            className="flex flex-wrap justify-center gap-2.5 mb-12"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <button 
-              onClick={() => setActiveCategory('all')}
-              className={`px-6 py-2 rounded-full transition-all duration-300 ${
-                activeCategory === 'all' 
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-900/20' 
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80'
-              }`}
-            >
-              All Projects
-            </button>
-            <button 
-              onClick={() => setActiveCategory('web')}
-              className={`px-6 py-2 rounded-full transition-all duration-300 ${
-                activeCategory === 'web' 
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-900/20' 
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80'
-              }`}
-            >
-              Web
-            </button>
-            <button 
-              onClick={() => setActiveCategory('app')}
-              className={`px-6 py-2 rounded-full transition-all duration-300 ${
-                activeCategory === 'app' 
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-900/20' 
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80'
-              }`}
-            >
-              Apps
-            </button>
+            {['all', 'web', 'app'].map((cat) => (
+              <button 
+                key={cat}
+                onClick={() => setActiveCategory(cat as 'all' | 'web' | 'app')}
+                className={`px-5 py-2 rounded-full transition-all duration-300 text-sm font-medium capitalize ${
+                  activeCategory === cat
+                    ? 'bg-white text-black shadow-lg' 
+                    : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/10'
+                }`}
+              >
+                {cat === 'all' ? 'All Projects' : `${cat}s`}
+              </button>
+            ))}
           </motion.div>
         </div>
+        
+        {/* 3-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {paginatedProjects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} />
+          ))}
+        </div>
 
-        {/* Loading state */}
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center py-10">
-            <p className="text-red-400">{error}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-md text-white"
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-12">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              aria-label="Previous page"
             >
-              Retry
+              <ChevronLeft className="w-4 h-4" />
             </button>
-          </div>
-        ) : filteredProjects.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-slate-400">No projects found in this category.</p>
-          </div>
-        ) : (
-          <>
-            {/* Projects grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentProjects.map((project, index) => (
-                <ProjectCard key={project.id} project={project} index={index} />
+
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`flex items-center justify-center w-9 h-9 rounded-lg font-medium transition-all duration-300 text-sm ${
+                    currentPage === page
+                      ? 'bg-white text-black'
+                      : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/10'
+                  }`}
+                >
+                  {page}
+                </button>
               ))}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-12">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => paginate(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
-                      currentPage === 1
-                        ? 'text-slate-600 cursor-not-allowed'
-                        : 'text-white hover:bg-slate-800'
-                    }`}
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </button>
-
-                  {[...Array(totalPages)].map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => paginate(idx + 1)}
-                      className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                        currentPage === idx + 1
-                          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-900/20'
-                          : 'text-slate-300 hover:bg-slate-800'
-                      }`}
-                    >
-                      {idx + 1}
-                    </button>
-                  ))}
-
-                  <button
-                    onClick={() => paginate(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
-                      currentPage === totalPages
-                        ? 'text-slate-600 cursor-not-allowed'
-                        : 'text-white hover:bg-slate-800'
-                    }`}
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              aria-label="Next page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </div>
     </section>
   );
 };
 
-// ProjectModal component
-const ProjectModal = ({ project, onClose }: { project: Project, onClose: () => void }) => {
-  // Create portal for the modal
-  const [mounted, setMounted] = useState(false);
-  const backdropRef = React.useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    // Prevent scrolling when modal is open
-    document.body.style.overflow = 'hidden';
-    
-    // Add escape key listener
-    const handleEscapeKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    
-    // Add click outside listener
-    const handleClickOutside = (e: MouseEvent) => {
-      if (backdropRef.current === e.target) {
-        onClose();
-      }
-    };
-    
-    window.addEventListener('keydown', handleEscapeKey);
-    document.addEventListener('mousedown', handleClickOutside);
-    
-    // Cleanup function
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleEscapeKey);
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose]);
-
-  if (!mounted) return null;
-
-  return createPortal(
-    <div 
-      ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
-    >
-      {/* Close Button - Positioned outside modal content for guaranteed accessibility */}
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClose();
-        }}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClose();
-        }}
-        className="fixed top-4 right-4 z-[60] p-3 bg-red-600/95 hover:bg-red-500/95 rounded-full transition-all duration-200 backdrop-blur-sm border border-red-500/50 shadow-2xl"
-        style={{ 
-          touchAction: 'manipulation',
-          WebkitTapHighlightColor: 'transparent',
-          userSelect: 'none'
-        }}
-        aria-label="Close modal"
-        type="button"
-      >
-        <X className="w-5 h-5 text-white" />
-      </button>
-
-      {/* Modal container with animation */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.3 }}
-        className="relative w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] bg-slate-900 rounded-xl sm:rounded-2xl shadow-2xl border border-slate-700 overflow-hidden flex flex-col my-auto"
-      >
-        {/* Content container - Single scrollable area on mobile */}
-        <div className="h-full overflow-y-auto">
-          <div className="lg:flex lg:min-h-full">
-                      {/* Left side: Project details */}
-            <div className="lg:w-2/3 p-4 sm:p-6 lg:p-8">
-            <div className="mb-6">
-              {/* Project title with gradient */}
-              <div className="mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-slate-700/50 pr-12">
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400">
-                    {project.title}
-                  </span>
-                </h2>
-              </div>
-              
-              {/* Project description */}
-              <div className="bg-slate-900/70 rounded-xl p-4 sm:p-6 border border-slate-700/40">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Project Overview</span>
-                </h3>
-                
-                <div className="prose prose-invert prose-slate max-w-none pl-3 sm:pl-4 border-l-2 border-cyan-800/50">
-                  <p className="text-sm sm:text-base text-slate-300 whitespace-pre-line leading-relaxed">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Project highlights - moved to bottom */}
-              <div className="mt-6 sm:mt-8 bg-slate-900/70 rounded-xl p-4 sm:p-6 border border-slate-700/40">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-400"></span>
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">Key Highlights</span>
-                </h3>
-                
-                <ul className="space-y-2 sm:space-y-3 pl-3 sm:pl-4 border-l-2 border-purple-800/50">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 text-cyan-400">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                      </svg>
-                    </span>
-                    <span className="text-sm sm:text-base text-slate-300">
-                      Personal project built with {project.tech.length} different technologies
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 text-cyan-400">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                      </svg>
-                    </span>
-                    <span className="text-sm sm:text-base text-slate-300">
-                      {project.category === 'web' ? 'Web application with responsive design' : 'Application with intuitive user interface'}
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 text-cyan-400">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                      </svg>
-                    </span>
-                    <span className="text-sm sm:text-base text-slate-300">
-                      {project.links.live ? "Deployed with live demo available" : "Completed project with source code available"}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-            {/* Right side: Image, tech stack, links */}
-            <div className="lg:w-1/3 bg-slate-800/50 border-t lg:border-t-0 lg:border-l border-slate-700/50 flex flex-col lg:h-full">
-            {/* Image - 16:9 aspect ratio */}
-            <div className="relative w-full pt-[56.25%] overflow-hidden mt-4 sm:mt-6 lg:mt-8 mx-4 sm:mx-6 lg:mx-0 rounded-lg lg:rounded-none">
-              {project.image ? (
-                <div 
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${project.image})` }}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-                  <span className="text-lg text-white/70 font-medium px-6 py-3 bg-slate-900/50 backdrop-blur-sm rounded-lg">
-                    {project.isLongImage ? 'Project Screenshot' : 'App Screenshot'}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            {/* Tech stack and details */}
-            <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
-              {/* Category info card */}
-              <div className="mb-4 sm:mb-6 bg-slate-900/70 rounded-xl p-3 sm:p-4 border border-slate-700/40">
-                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-2 sm:mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400"></span> 
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Category</span>
-                </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-slate-300 pl-3 sm:pl-4 border-l-2 border-cyan-800/50">
-                  {project.category === 'web' ? 'Web Application' : 'Application'}
-                </p>
-              </div>
-              
-              {/* Tech stack info card */}
-              <div className="mb-6 sm:mb-8 bg-slate-900/70 rounded-xl p-3 sm:p-4 border border-slate-700/40">
-                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-2 sm:mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">Technology Stack</span>
-                </h3>
-                
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 pl-3 sm:pl-4 border-l-2 border-blue-800/50">
-                  {project.tech.map((tech: string, i) => (
-                    <span 
-                      key={i} 
-                      className="px-2 sm:px-3 py-1 text-xs font-medium bg-slate-800/80 text-slate-300 rounded-full border border-slate-700/50"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Action buttons */}
-              <div className="flex flex-col gap-2 sm:gap-3 mt-auto pb-2">
-                {project.links.live && (
-                  <Link 
-                    href={project.links.live} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="relative inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-800 to-purple-900 rounded-lg text-white font-medium overflow-hidden group border border-indigo-700/50 w-full"
-                    onClick={(e) => e.stopPropagation()} // Prevent event bubbling
-                  >
-                    {/* Glass angle animation overlay */}
-                    <span className="absolute inset-0 overflow-hidden">
-                      <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-sweep"></span>
-                    </span>
-                    
-                    <Globe className="w-3 sm:w-4 h-3 sm:h-4 mr-1.5 sm:mr-2 relative z-10 text-cyan-300" />
-                    <span className="relative z-10 text-cyan-50 font-semibold tracking-wide text-sm sm:text-base">View Live Demo</span>
-                  </Link>
-                )}
-                
-                {project.links.github && (
-                  <Link 
-                    href={project.links.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="relative inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-slate-900 rounded-lg text-white font-medium overflow-hidden group border border-slate-700/50 w-full"
-                    onClick={(e) => e.stopPropagation()} // Prevent event bubbling
-                  >
-                    {/* Glass angle animation overlay */}
-                    <span className="absolute inset-0 overflow-hidden">
-                      <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-glass-sweep"></span>
-                    </span>
-                    
-                    <Github className="w-3 sm:w-4 h-3 sm:h-4 mr-1.5 sm:mr-2 relative z-10 text-purple-300" />
-                    <span className="relative z-10 text-purple-200 font-semibold tracking-wide text-sm sm:text-base">View Source Code</span>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </motion.div>
-    </div>,
-    document.body
-  );
-};
-
-// ProjectCard component
+// --- Premium Glassmorphism Card ---
 const ProjectCard = ({ project, index }: { project: Project, index: number }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
     <motion.div
-      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200/10 bg-slate-900/35 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.9)] ring-1 ring-teal-300/10 backdrop-blur-md transition-all duration-300 hover:border-teal-300/25 hover:shadow-[0_26px_60px_-30px_rgba(20,184,166,0.28)]"
-      initial={{ opacity: 1, y: 20 }}
+      className="group relative flex flex-col h-full rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-500 hover:border-violet-400/30 hover:shadow-[0_8px_32px_rgba(139,92,246,0.15)]"
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      onClick={() => setIsModalOpen(true)}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(45,212,191,0.14),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(99,102,241,0.14),transparent_40%)] opacity-80" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+      {/* Glass edge top highlight */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent z-20" />
+      {/* Ambient inner glow on hover */}
+      <div className="pointer-events-none absolute -inset-px bg-gradient-to-b from-violet-500/0 via-violet-500/0 to-violet-500/0 group-hover:from-violet-500/5 group-hover:to-violet-500/0 transition-all duration-500 rounded-2xl" />
 
-      {/* Project image - 16:9 aspect ratio */}
-      <div className="relative w-full overflow-hidden pt-[56.25%]">
-        {/* Image container */}
-        <div className="absolute inset-0 overflow-hidden">
-          {!project.image ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-              <p className="text-lg text-white/70 font-medium px-6 py-3 bg-slate-900/50 backdrop-blur-sm rounded-lg">
-                {project.isLongImage ? 'Project Screenshot' : 'App Screenshot'}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div 
-                className="absolute inset-0 bg-cover bg-top bg-no-repeat transition-transform duration-300 group-hover:scale-105"
-                style={{ backgroundImage: `url(${project.image})` }}
-              />
-              {/* Hover overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/20">
-                <div className="rounded-lg border border-white/15 bg-slate-900/55 px-4 py-2 text-sm text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-                  Click to view details
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Project details - Enhanced design */}
-      <div className="relative z-10 bg-gradient-to-b from-slate-900/0 to-slate-950/80 p-6">
-        {/* Title - Professional styling with Noto Sans font */}
-        <h3 className="text-xl font-bold mb-2 text-white font-['Noto_Sans']">
-          {project.title}
-        </h3>
+      {/* Strict 16:9 Image Ratio */}
+      <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
+        {!project.image ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent_70%)]">
+            <Globe className="w-10 h-10 text-slate-700" />
+          </div>
+        ) : (
+          <img
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
+          />
+        )}
         
-        {/* Description - Limited to single line */}
-        <p className="mb-4 truncate text-slate-200/90">
-          {project.description}
-        </p>
+        {/* Deep gradient overlay for readability of tech pills */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
         
-        {/* Divider */}
-        <div className="my-4 h-px bg-gradient-to-r from-transparent via-slate-200/20 to-transparent"></div>
-        
-        {/* Tech stack with improved visual */}
-        <div className="mb-5">
-          <div className="flex flex-wrap gap-2">
+        {/* Tech stack overlaid on image bottom - Always visible */}
+        {project.tech.length > 0 && (
+          <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5 z-10">
             {project.tech.slice(0, 3).map((tech: string, i) => (
               <span 
                 key={i} 
-                className="rounded-full border border-slate-500/30 bg-slate-900/55 px-3 py-1 text-xs font-medium text-slate-200 transition-all duration-300 hover:border-teal-300/40 hover:bg-slate-800/70"
+                className="rounded-full border border-white/10 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono font-medium text-slate-200"
               >
                 {tech}
               </span>
             ))}
             {project.tech.length > 3 && (
-              <span className="rounded-full border border-slate-500/30 bg-slate-900/55 px-3 py-1 text-xs font-medium text-slate-200">
-                +{project.tech.length - 3} more
+              <span className="rounded-full border border-white/10 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono font-medium text-slate-200">
+                +{project.tech.length - 3}
               </span>
             )}
           </div>
-        </div>
-        
-        {/* Action buttons - Enhanced */}
-        <div className="flex items-center justify-end gap-3">
-          {project.links.live && (
-            <Link 
-              href={project.links.live} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg border border-indigo-500/40 bg-gradient-to-r from-teal-500/25 to-indigo-500/35 px-6 py-2.5 font-medium text-white shadow-md transition-all duration-300 hover:border-teal-300/60 hover:shadow-lg hover:shadow-indigo-500/30"
-              onClick={(e) => e.stopPropagation()} // Prevent modal from opening when clicking the button
-            >
-              {/* Glass angle animation overlay */}
-              <span className="absolute inset-0 overflow-hidden">
-                <span className="absolute -inset-[100%] skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-glass-sweep"></span>
-              </span>
-              
-              <Globe className="relative z-10 mr-2 h-4 w-4 text-teal-200" />
-              <span className="relative z-10 font-semibold tracking-wide text-teal-50">Live Demo</span>
-            </Link>
-          )}
-          
-          {/* View Details Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-            className="inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-white text-sm font-medium transition-all duration-300 border border-slate-700/50 hover:border-slate-500/80"
-          >
-            <span>Details</span>
-            <ArrowRight className="w-4 h-4 ml-1" />
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* Project Modal */}
-      {isModalOpen && (
-        <ProjectModal 
-          project={project}
-          onClose={() => {
-            setIsModalOpen(false);
-          }}
-        />
-      )}
+      {/* Content Body - Clean and Minimal */}
+      <div className="relative flex flex-col flex-grow p-5 pt-4 z-10">
+        {/* Category Type */}
+        <span className="text-[10px] font-semibold text-violet-400 tracking-widest uppercase mb-2 truncate">
+          {project.category === 'web' ? 'Web App' : 'Application'}
+        </span>
+        
+        {/* Title */}
+        <h3 className="text-lg font-bold text-white mb-4 tracking-tight leading-snug flex-grow transition-colors duration-300 group-hover:text-violet-300">
+          {project.title}
+        </h3>
+        
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3 mt-auto pt-4 border-t border-white/5">
+          {project.github_url && (
+            <Link
+              href={project.github_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white transition-all duration-300"
+              aria-label="View Source Code"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </Link>
+          )}
+
+          {project.live_url && (
+            <Link
+              href={project.live_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="visit-btn-outer"
+              aria-label="Visit Live Site"
+            >
+              <div className="visit-btn-inner">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1 -4 10 15.3 15.3 0 0 1 -4 -10 15.3 15.3 0 0 1 4 -10z"></path>
+                </svg>
+                <p>Visit Site</p>
+              </div>
+            </Link>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 };
 
-// Add animation keyframes
-export default Works;
+/* ── Visit Button Styles ── */
+const styles = `
+.visit-btn-outer {
+  width: 120px;
+  height: 41px;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: linear-gradient(
+    to bottom right,
+    #2e8eff 0%,
+    rgba(46, 142, 255, 0) 30%
+  );
+  background-color: rgba(46, 142, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
 
-{/* Add animation keyframes */}
-<style jsx global>{`
-  @keyframes glass-sweep {
-    0% {
-      transform: translateX(-100%);
-    }
-    20% {
-      transform: translateX(100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
+.visit-btn-outer:hover,
+.visit-btn-outer:focus {
+  background-color: rgba(46, 142, 0.7);
+  box-shadow: 0 0 10px rgba(46, 142, 255, 0.5);
+  outline: none;
+}
+
+.visit-btn-inner {
+  width: 116px;
+  height: 37px;
+  border-radius: 11px;
+  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.visit-btn-inner svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #fff;
+  flex-shrink: 0;
+}
+`;
+
+if (typeof document !== 'undefined') {
+  const existingId = 'visit-btn-styles';
+  if (!document.getElementById(existingId)) {
+    const tag = document.createElement('style');
+    tag.id = existingId;
+    tag.textContent = styles;
+    document.head.appendChild(tag);
   }
-  
-  .animate-glass-sweep {
-    animation: glass-sweep 6s ease-out infinite;
-  }
-`}</style> 
+}
+
+export default Works;
