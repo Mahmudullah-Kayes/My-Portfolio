@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${siteUrl}/og-image.png`, // You'll need to create this image
+        url: `${siteUrl}/og-image.png`, 
         width: 1200,
         height: 630,
         alt: "Kayes Portfolio",
@@ -72,6 +72,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kayes Portfolio | Full Stack Web Developer",
     description: "Kayes's portfolio showcasing web development projects, skills, and professional experience in React, Next.js, and full-stack development.",
+    creator: "Kayes",
     images: [`${siteUrl}/og-image.png`],
   },
   // Icons and theme colors

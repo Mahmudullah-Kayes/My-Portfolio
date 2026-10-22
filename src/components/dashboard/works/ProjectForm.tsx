@@ -19,14 +19,12 @@ const ProjectForm = ({
   onSave, 
   onCancel 
 }: ProjectFormProps) => {
-  // Add mounted state to prevent hydration issues
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Initialize form with either editing project or empty one
   const [formData, setFormData] = useState<Project>(
     project ? { ...project } : { ...defaultProject }
   );
@@ -37,14 +35,11 @@ const ProjectForm = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   
-  // For file input
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // Handle nested properties
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       if (parent === 'links') {
@@ -57,12 +52,10 @@ const ProjectForm = ({
         });
       }
     } else if (name === 'isClientProject') {
-      // Toggle client project status
       const isClient = (e.target as HTMLInputElement).checked;
       setFormData({
         ...formData,
         isClientProject: isClient,
-        // Reset client and industry if toggling off
         client: isClient ? formData.client : '',
         industry: isClient ? formData.industry : ''
       });
@@ -74,46 +67,37 @@ const ProjectForm = ({
     }
   };
 
-  // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    // Reset state
     setUploadError('');
     setIsUploading(true);
     setUploadProgress(0);
     
     try {
-      // Validate file is an image
       if (!file.type.startsWith('image/')) {
         setUploadError('File must be an image');
         setIsUploading(false);
         return;
       }
       
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setUploadError('Image must be less than 5MB');
         setIsUploading(false);
         return;
       }
       
-      // For now, just simulate upload and use a placeholder URL
-      // In a real implementation, you would upload to your server or a service
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Create a fake URL (in production, replace with actual upload)
       const timestamp = typeof window !== 'undefined' ? Date.now() : 'ssr';
       const fakeUrl = `/placeholder-${timestamp}.png`;
       
-      // Update form with new image URL
       setFormData({
         ...formData,
         image: fakeUrl
       });
       
-      // Set progress to complete
       setUploadProgress(100);
     } catch (error: any) {
       setUploadError(error.message || 'Failed to process image');
@@ -122,12 +106,10 @@ const ProjectForm = ({
     }
   };
 
-  // Trigger file input click
   const handleClickUpload = () => {
     fileInputRef.current?.click();
   };
 
-  // Handle technology tags
   const addTech = () => {
     if (newTech.trim() && !formData.tech.includes(newTech.trim())) {
       setFormData({
@@ -145,16 +127,12 @@ const ProjectForm = ({
     });
   };
 
-  // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Pass the form data back to parent component
       onSave(formData);
     } catch (error: any) {
       toast.error('Failed to save project. Please try again.');
@@ -162,7 +140,6 @@ const ProjectForm = ({
     }
   };
 
-  // Only render the form when mounted on client side
   if (!mounted) {
     return null;
   }
@@ -227,27 +204,9 @@ const ProjectForm = ({
               />
             </div>
 
-            {/* Description */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-slate-300 mb-1">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-                rows={3}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Brief description of your project"
-              />
-            </div>
-
             {/* Client-specific fields */}
             {formData.isClientProject && (
               <>
-                {/* Client Name */}
                 <div>
                   <label htmlFor="client" className="block text-sm font-medium text-slate-300 mb-1">
                     Client Name <span className="text-slate-400 text-xs">(or "Confidential Client")</span>
@@ -275,7 +234,6 @@ const ProjectForm = ({
                   </div>
                 </div>
 
-                {/* Industry */}
                 <div>
                   <label htmlFor="industry" className="block text-sm font-medium text-slate-300 mb-1">
                     Industry
@@ -308,7 +266,6 @@ const ProjectForm = ({
                 Project Image
               </label>
               
-              {/* Image Preview */}
               {formData.image && (
                 <div className="mb-3 relative">
                   <div className="w-full h-40 bg-slate-800 rounded-md overflow-hidden relative">
@@ -328,9 +285,7 @@ const ProjectForm = ({
                 </div>
               )}
               
-              {/* Image input methods */}
               <div className="flex flex-col space-y-3">
-                {/* URL input */}
                 <div className="flex">
                   <input
                     type="text"
@@ -349,14 +304,12 @@ const ProjectForm = ({
                   </button>
                 </div>
                 
-                {/* OR Divider */}
                 <div className="flex items-center space-x-4">
                   <div className="flex-1 h-px bg-slate-700"></div>
                   <span className="text-slate-500 text-sm">OR</span>
                   <div className="flex-1 h-px bg-slate-700"></div>
                 </div>
                 
-                {/* File upload */}
                 <div>
                   <input
                     type="file"
@@ -395,7 +348,7 @@ const ProjectForm = ({
               </div>
             </div>
 
-            {/* Category - only show for non-client projects */}
+            {/* Category - only for non-client projects */}
             {!formData.isClientProject && (
               <div>
                 <label htmlFor="category" className="block text-sm font-medium text-slate-300 mb-1">
@@ -414,7 +367,7 @@ const ProjectForm = ({
               </div>
             )}
 
-            {/* Long Image Toggle - only show for non-client projects */}
+            {/* Long Image Toggle - only for non-client projects */}
             {!formData.isClientProject && (
               <div className="flex items-center">
                 <input
@@ -523,4 +476,4 @@ const ProjectForm = ({
   );
 };
 
-export default ProjectForm; 
+export default ProjectForm;
