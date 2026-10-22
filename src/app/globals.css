@@ -140,18 +140,30 @@
 }
 
 @layer utilities {
+  .site-background {
+    background-color: #050816;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgb(15 23 42 / 75%), transparent 60%),
+      linear-gradient(180deg, #050816 0%, #080b18 52%, #050816 100%);
+  }
+
   .ambient-glow {
     border-radius: 9999px;
-    animation: ambient-drift 36s ease-in-out infinite;
+    animation: ambient-drift 42s ease-in-out infinite;
   }
 
   .ambient-glow-teal {
-    background: radial-gradient(ellipse at center, rgb(20 184 166 / 7%) 0%, transparent 68%);
+    background: radial-gradient(ellipse at center, rgb(20 184 166 / 21%) 0%, rgb(20 184 166 / 9%) 34%, transparent 72%);
   }
 
   .ambient-glow-indigo {
-    background: radial-gradient(ellipse at center, rgb(99 102 241 / 7%) 0%, transparent 68%);
+    background: radial-gradient(ellipse at center, rgb(99 102 241 / 19%) 0%, rgb(99 102 241 / 8%) 36%, transparent 72%);
     animation-delay: -18s;
+  }
+
+  .ambient-glow-blue {
+    background: radial-gradient(ellipse at center, rgb(56 189 248 / 13%) 0%, rgb(56 189 248 / 5%) 38%, transparent 72%);
+    animation-delay: -30s;
   }
 
   /* ─── Hero Animations ─── */
