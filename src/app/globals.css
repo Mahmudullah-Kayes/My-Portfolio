@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@source "../";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -120,10 +121,6 @@
     @apply bg-background text-foreground;
   }
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @layer utilities {
   .animate-blink-fast {
