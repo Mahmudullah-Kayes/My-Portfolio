@@ -99,7 +99,7 @@ export default function ClientProjects() {
 
   if (isLoading) {
     return (
-      <section className="relative py-24 bg-transparent overflow-hidden">
+      <section className="relative overflow-hidden py-24">
         <div className="container mx-auto px-4">
           <div className="flex justify-center items-center py-32">
             <div className="relative">
@@ -114,7 +114,7 @@ export default function ClientProjects() {
   if (projects.length === 0) return null;
 
   return (
-    <section className="relative py-24 bg-transparent overflow-hidden">
+    <section className="relative overflow-hidden py-24">
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">

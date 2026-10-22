@@ -43,7 +43,7 @@ const Hero = async () => {
   const wa = contact.phone ? `https://wa.me/${contact.phone.replace(/\D/g, "")}` : "#";
 
   return (
-    <section id="home" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden bg-transparent">
+    <section id="home" className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-lg mx-auto px-5 sm:px-8">

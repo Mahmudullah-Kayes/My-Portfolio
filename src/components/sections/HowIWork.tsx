@@ -148,14 +148,8 @@ const HowIWork = () => {
   const currentStepData = workSteps[currentStep];
 
   return (
-    <section ref={sectionRef} className="relative py-24 overflow-hidden bg-transparent">
-      {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -right-32 h-64 w-64 rounded-full bg-indigo-600/5 blur-3xl"></div>
-        <div className="absolute bottom-1/4 -left-32 h-64 w-64 rounded-full bg-teal-500/5 blur-3xl"></div>
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
+    <section ref={sectionRef} className="overflow-hidden py-24">
+      <div className="container relative mx-auto px-4">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 1, y: 30 }}
@@ -186,12 +180,6 @@ const HowIWork = () => {
             transition={{ duration: 0.8 }}
             className="mb-16 relative"
           >
-            {/* Background Glow Effects */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-1/2 left-1/4 h-96 w-96 -translate-y-1/2 transform rounded-full bg-teal-500/10 blur-3xl"></div>
-              <div className="absolute top-1/2 right-1/4 h-96 w-96 -translate-y-1/2 transform rounded-full bg-indigo-500/10 blur-3xl"></div>
-            </div>
-
             <div className="relative max-w-7xl mx-auto">
               {/* Enhanced Circular Steps */}
                <div className="relative">
@@ -398,18 +386,6 @@ const HowIWork = () => {
                {/* Details Card with Split Layout */}
                <div className="relative overflow-hidden rounded-2xl border border-slate-200/15 bg-slate-900/30 p-6 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.85)] ring-1 ring-teal-300/10 backdrop-blur-xl transition-all duration-500 md:p-8">
                  
-                 {/* Background Glow */}
-                 <div className="absolute inset-0 rounded-3xl overflow-hidden">
-                   <div className="absolute inset-0 bg-gradient-to-br from-slate-900/55 via-slate-900/30 to-slate-950/60"></div>
-                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(45,212,191,0.12),transparent_35%),radial-gradient(circle_at_84%_82%,rgba(99,102,241,0.12),transparent_40%)]"></div>
-                   <div className="absolute -left-20 top-6 h-44 w-44 rounded-full bg-teal-200/10 blur-3xl"></div>
-                   <div className="absolute -right-16 bottom-4 h-36 w-36 rounded-full bg-indigo-300/10 blur-3xl"></div>
-                   <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.7)_1px,transparent_0)] [background-size:16px_16px]"></div>
-                   <div className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-teal-100/40 to-transparent"></div>
-                   <div className="absolute top-0 left-0 h-full w-px bg-gradient-to-b from-white/25 via-transparent to-transparent"></div>
-                   <div className="absolute bottom-0 right-0 h-px w-full bg-gradient-to-r from-transparent via-indigo-200/25 to-transparent"></div>
-                 </div>
-
                  {/* Split Layout Content */}
                  <div className="relative z-10 max-w-5xl mx-auto">
                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">

@@ -107,17 +107,8 @@ const About = () => {
   );
 
   return (
-    <section className="relative py-20 sm:py-28">
-
-      {/* Glass surface: just enough to make text readable over the animated bg */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]" />
-
-      {/* One single centered glow — doesn't compete, just adds depth */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[500px] h-[300px] bg-teal-500/4 rounded-full blur-[80px]" />
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 lg:px-16">
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-16">
         <div className="flex flex-col lg:flex-row lg:gap-20 xl:gap-28">
 
           {/* ══════════════════════════════════════════

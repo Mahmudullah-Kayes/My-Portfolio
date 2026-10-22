@@ -51,6 +51,16 @@
   }
 }
 
+@keyframes ambient-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(5vw, 4vh, 0);
+  }
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -130,6 +140,20 @@
 }
 
 @layer utilities {
+  .ambient-glow {
+    border-radius: 9999px;
+    animation: ambient-drift 36s ease-in-out infinite;
+  }
+
+  .ambient-glow-teal {
+    background: radial-gradient(ellipse at center, rgb(20 184 166 / 7%) 0%, transparent 68%);
+  }
+
+  .ambient-glow-indigo {
+    background: radial-gradient(ellipse at center, rgb(99 102 241 / 7%) 0%, transparent 68%);
+    animation-delay: -18s;
+  }
+
   /* ─── Hero Animations ─── */
   @keyframes shimmer {
     0% {
@@ -144,4 +168,10 @@
     animation: shimmer 3s ease-in-out 1s infinite;
   }
 
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow {
+    animation: none;
+  }
 }

@@ -124,7 +124,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative py-12 overflow-hidden border-t border-slate-800 bg-transparent">
+    <footer className="relative overflow-hidden border-t border-slate-800 py-12">
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

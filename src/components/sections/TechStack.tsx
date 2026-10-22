@@ -38,7 +38,7 @@ function TechnologyList({ duplicate = false }: { duplicate?: boolean }) {
 
 export default function TechStack() {
   return (
-    <section className="relative overflow-hidden bg-transparent py-16">
+    <section className="relative overflow-hidden py-16">
       <div className="container relative z-10 mx-auto px-4">
         <h2 className="mb-8 bg-gradient-to-r from-teal-400 to-indigo-500 bg-clip-text text-center text-3xl font-bold text-transparent sm:mb-12 md:text-4xl">
           Technologies I Work With
