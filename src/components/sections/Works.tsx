@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
 
@@ -98,7 +99,7 @@ const Works = () => {
 
   if (isLoading) {
     return (
-      <section id="works" className="relative py-24 bg-transparent overflow-hidden">
+      <section className="relative py-24 bg-transparent overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex justify-center items-center py-32">
             <div className="relative">
@@ -113,7 +114,7 @@ const Works = () => {
   if (projects.length === 0) return null;
 
   return (
-    <section id="works" className="relative py-24 bg-transparent overflow-hidden">
+    <section className="relative py-24 bg-transparent overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
@@ -244,11 +245,14 @@ const ProjectCard = ({ project, index }: { project: Project, index: number }) =>
             <Globe className="w-10 h-10 text-slate-700" />
           </div>
         ) : (
-          <img
+          <Image
             src={project.image}
             alt={project.title}
+            width={800}
+            height={450}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
           />
         )}
         

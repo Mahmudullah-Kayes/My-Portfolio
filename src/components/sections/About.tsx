@@ -101,13 +101,13 @@ const About = () => {
   const statusLabel = hero.status === "available" ? hero.available_text : hero.status === "busy" ? hero.busy_text : hero.offline_text;
 
   if (loading) return (
-    <section id="about" className="py-32 flex items-center justify-center">
+    <section className="py-32 flex items-center justify-center">
       <div className="w-6 h-6 rounded-full border border-teal-400/30 border-t-teal-400 animate-spin" />
     </section>
   );
 
   return (
-    <section id="about" className="relative py-20 sm:py-28">
+    <section className="relative py-20 sm:py-28">
 
       {/* Glass surface: just enough to make text readable over the animated bg */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]" />
@@ -147,7 +147,7 @@ const About = () => {
                     alt="Kayes"
                     fill
                     className="object-cover hover:scale-[1.02] transition-transform duration-700"
-                    priority
+                    sizes="(max-width: 1024px) 100vw, 400px"
                     onError={() => setImgErr(true)}
                   />
                 )}
@@ -215,7 +215,14 @@ const About = () => {
                       <Code2 size={20} className="text-teal-400/30" />
                     </div>
                   ) : (
-                    <Image src={about.image_url} alt="Kayes" fill className="object-cover" priority onError={() => setImgErr(true)} />
+                    <Image
+                      src={about.image_url}
+                      alt="Kayes"
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                      onError={() => setImgErr(true)}
+                    />
                   )}
                 </div>
               </div>

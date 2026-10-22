@@ -148,7 +148,7 @@ const HowIWork = () => {
   const currentStepData = workSteps[currentStep];
 
   return (
-    <section ref={sectionRef} id="how-i-work" className="relative py-24 overflow-hidden bg-transparent">
+    <section ref={sectionRef} className="relative py-24 overflow-hidden bg-transparent">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -right-32 h-64 w-64 rounded-full bg-indigo-600/5 blur-3xl"></div>

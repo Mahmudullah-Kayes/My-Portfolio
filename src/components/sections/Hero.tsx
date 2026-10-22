@@ -1,12 +1,7 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import { ArrowRight, Github, Linkedin, Phone, Facebook } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-type Status = "available" | "busy" | "offline";
 
 interface ContactSettings {
   phone: string;
@@ -22,33 +17,27 @@ const DEFAULT_CONTACT: ContactSettings = {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-const Hero = () => {
-  const [contact, setContact] = useState<ContactSettings>(DEFAULT_CONTACT);
-  const [isLoading, setIsLoading] = useState(true);
+const Hero = async () => {
+  let contact = DEFAULT_CONTACT;
 
-  useEffect(() => {
-    // Fetch contact settings with error handling and timeout
-    const fetchContact = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("contact_settings")
-          .select("phone, social_links")
-          .limit(1)
-          .order("created_at", { ascending: true })
-          .single();
+  try {
+    const { data, error } = await supabase
+      .from("contact_settings")
+      .select("phone, social_links")
+      .limit(1)
+      .order("created_at", { ascending: true })
+      .single();
 
-        if (error) throw error;
-        if (data) setContact(data);
-      } catch (error) {
-        console.error("Failed to fetch contact settings:", error);
-        // Continue with default values
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchContact();
-  }, []);
+    if (error) throw error;
+    if (data) {
+      contact = {
+        phone: data.phone || "",
+        social_links: { ...DEFAULT_CONTACT.social_links, ...data.social_links },
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch contact settings:", error);
+  }
 
   // Build WhatsApp URL only when needed (memoized)
   const wa = contact.phone ? `https://wa.me/${contact.phone.replace(/\D/g, "")}` : "#";

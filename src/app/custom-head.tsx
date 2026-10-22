@@ -1,5 +1,3 @@
-'use client';
-
 import Script from 'next/script';
 
 export default function CustomHead() {
@@ -7,16 +5,15 @@ export default function CustomHead() {
 
   return (
     <>
-      {/* Google Analytics - Using async loading to avoid errors */}
       <Script
         id="ga-tag-manager"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         async
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
       />
       <Script
         id="ga-config"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];

@@ -1,14 +1,11 @@
 import Hero from "@/components/sections/Hero";
-import Works from "@/components/sections/Works";
-import About from "@/components/sections/About";
 import TechStack from "@/components/sections/TechStack";
-import ClientProjects from "@/components/sections/ClientProjects";
-import HowIWork from "@/components/sections/HowIWork";
-import Testimonials from "@/components/sections/Testimonials";
-import Footer from "@/components/sections/Footer";
 import Background from "@/components/sections/Background";
 import Navbar from "@/components/Navbar";
 import JsonLd from "@/components/SEO/JsonLd";
+import DeferredHomeSection from "@/components/DeferredHomeSection";
+
+export const revalidate = 60;
 
 export default function Home() {
   // Portfolio structured data
@@ -52,12 +49,36 @@ export default function Home() {
       <Navbar />
       <Hero />
       <TechStack />
-      <ClientProjects />
-      <About />
-      <HowIWork />
-      <Works />
-      <Testimonials />
-      <Footer />
+      <DeferredHomeSection
+        section="client-projects"
+        id="client-projects"
+        placeholderClassName="min-h-[32rem]"
+      />
+      <DeferredHomeSection
+        section="about"
+        id="about"
+        placeholderClassName="min-h-[36rem]"
+      />
+      <DeferredHomeSection
+        section="how-i-work"
+        id="how-i-work"
+        placeholderClassName="min-h-[36rem]"
+      />
+      <DeferredHomeSection
+        section="works"
+        id="works"
+        placeholderClassName="min-h-[32rem]"
+      />
+      <DeferredHomeSection
+        section="testimonials"
+        id="testimonials"
+        placeholderClassName="min-h-[24rem]"
+      />
+      <DeferredHomeSection
+        section="footer"
+        id="footer"
+        placeholderClassName="min-h-32"
+      />
       </div>
     </main>
   );

@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { trackPageView } from '@/lib/utils/analytics';
 
 export default function PageViewTracker() {
   const pathname = usePathname();
@@ -12,8 +11,13 @@ export default function PageViewTracker() {
   useEffect(() => {
     // Don't track views for dashboard routes
     if (!pathname.startsWith('/dashboard')) {
-      // Track in Supabase
-      trackPageView(pathname);
+      const timeoutId = window.setTimeout(() => {
+        void import('@/lib/utils/analytics')
+          .then(({ trackPageView }) => trackPageView(pathname))
+          .catch((error) => {
+            console.error('Failed to load page view tracking:', error);
+          });
+      }, 2000);
       
       // Track in Google Analytics if gtag is available
       if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
@@ -22,6 +26,8 @@ export default function PageViewTracker() {
           page_path: url,
         });
       }
+
+      return () => window.clearTimeout(timeoutId);
     }
   }, [pathname, searchParams, gaId]);
 

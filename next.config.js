@@ -1,4 +1,8 @@
-module.exports = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+module.exports = withBundleAnalyzer({
   experimental: {
     inlineCss: true,
   },
@@ -10,6 +14,7 @@ module.exports = {
     ignoreBuildErrors: true,
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -17,4 +22,4 @@ module.exports = {
       },
     ],
   },
-} 
+});

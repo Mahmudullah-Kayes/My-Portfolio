@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import ContactModal from './ContactModal';
 
 const navItems = [
   { name: 'Home', href: '#home' },
@@ -17,6 +15,10 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [scrolled, setScrolled] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [ContactModalComponent, setContactModalComponent] = useState<React.ComponentType<{
+    isOpen: boolean;
+    onClose: () => void;
+  }> | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -67,9 +69,13 @@ const Navbar = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const openContactModal = () => {
-    setIsContactModalOpen(true);
+  const openContactModal = async () => {
     setIsMobileMenuOpen(false); // Close mobile menu when opening contact modal
+    if (!ContactModalComponent) {
+      const { default: ContactModal } = await import('./ContactModal');
+      setContactModalComponent(() => ContactModal);
+    }
+    setIsContactModalOpen(true);
   };
 
   // Close mobile menu when clicking outside
@@ -89,12 +95,7 @@ const Navbar = () => {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-4 py-4 sm:px-6"
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-4 py-4 sm:px-6">
         {/* Desktop Navigation */}
         <nav 
           className={`hidden md:flex ${
@@ -122,12 +123,7 @@ const Navbar = () => {
                   )}
                   {item.name}
                   {activeSection === item.href.substring(1) && (
-                    <motion.div
-                      layoutId="activeSection"
-                      className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-gradient-to-r from-teal-400 to-indigo-500"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-gradient-to-r from-teal-400 to-indigo-500" />
                   )}
                 </Link>
               </li>
@@ -170,24 +166,14 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Dropdown */}
-          <AnimatePresence>
-            {isMobileMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
+          {isMobileMenuOpen && (
+              <div
                 className="absolute left-4 right-4 top-full mt-2 overflow-hidden rounded-2xl border border-slate-200/10 bg-slate-900/85 shadow-xl shadow-slate-900/50 ring-1 ring-teal-300/10 backdrop-blur-xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="py-4">
-                  {navItems.map((item, index) => (
-                    <motion.div
-                      key={item.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
+                  {navItems.map((item) => (
+                    <div key={item.name}>
                       <Link
                         href={item.href}
                         onClick={(e) => handleNavClick(e, item.href)}
@@ -199,34 +185,30 @@ const Navbar = () => {
                       >
                         {item.name}
                       </Link>
-                    </motion.div>
+                    </div>
                   ))}
                   
                   {/* Contact Button in Mobile Menu */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: navItems.length * 0.1 }}
-                    className="px-6 py-3"
-                  >
+                  <div className="px-6 py-3">
                     <button
                       onClick={openContactModal}
                       className="w-full rounded-xl border border-teal-300/25 bg-gradient-to-r from-teal-400/90 to-indigo-600/90 px-6 py-3 text-base font-semibold text-white transition-all duration-300 hover:from-teal-400 hover:to-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30"
                     >
                       Let's Talk
                     </button>
-                  </motion.div>
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
-      </motion.header>
+      </header>
 
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
-      />
+      {ContactModalComponent && (
+        <ContactModalComponent
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+      )}
     </>
   );
 };
